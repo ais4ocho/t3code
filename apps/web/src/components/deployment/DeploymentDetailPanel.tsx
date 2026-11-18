@@ -4,6 +4,10 @@ import {
   deploymentTitle,
   deploymentUrl,
 } from "@t3tools/client-runtime/deployment-presentation";
+import {
+  DEPLOYMENT_IN_PROGRESS_REFRESH_MS,
+  deploymentListRefreshMs,
+} from "@t3tools/client-runtime/state/deployments";
 import type {
   Deployment,
   DeploymentListResult,
@@ -16,8 +20,13 @@ import { useState } from "react";
 
 import { RelativeTime } from "~/components/RelativeTime";
 import { RefreshIcon } from "~/components/ui/refresh-icon";
+import { useLiveRefresh } from "~/hooks/useLiveRefresh";
 import { cn } from "~/lib/utils";
-import { deploymentEnvironment } from "~/state/deployments";
+import {
+  deploymentEnvironment,
+  deploymentListRefreshKey,
+  type DeploymentListTarget,
+} from "~/state/deployments";
 import { useEnvironmentQuery } from "~/state/query";
 
 import {
@@ -44,11 +53,12 @@ interface DeploymentPanelTarget {
 }
 
 // The input's JSON is the query's cache key, so every reader of a list builds it this way.
-function deploymentListQuery({ environmentId, projectId, branch }: DeploymentPanelTarget) {
-  return deploymentEnvironment.list({
-    environmentId,
-    input: { projectId, ...(branch === undefined ? {} : { branch }) },
-  });
+function deploymentListTarget({
+  environmentId,
+  projectId,
+  branch,
+}: DeploymentPanelTarget): DeploymentListTarget {
+  return { environmentId, input: { projectId, ...(branch === undefined ? {} : { branch }) } };
 }
 
 function listedDeployment(list: DeploymentListResult | null, hostname: string): Deployment | null {
@@ -58,17 +68,44 @@ function listedDeployment(list: DeploymentListResult | null, hostname: string): 
 
 /** A deployment tab's name once the list its panel reads knows the deployment; null until then. */
 export function useDeploymentTabTitle(target: DeploymentPanelTarget | null): string | null {
-  const list = useEnvironmentQuery(target === null ? null : deploymentListQuery(target)).data;
+  const list = useEnvironmentQuery(
+    target === null ? null : deploymentEnvironment.list(deploymentListTarget(target)),
+  ).data;
   const deployment = target === null ? null : listedDeployment(list, target.hostname);
   return deployment === null ? null : deploymentTitle(deployment);
 }
 
 export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
   const { environmentId, projectId, hostname } = target;
-  const listQuery = useEnvironmentQuery(deploymentListQuery(target));
+  const listTarget = deploymentListTarget(target);
+  const listQuery = useEnvironmentQuery(deploymentEnvironment.list(listTarget));
   const [source, setSource] = useState<DeploymentLogSource>("build");
   const logsQuery = useEnvironmentQuery(
     deploymentEnvironment.logs({ environmentId, input: { projectId, hostname, source } }),
+  );
+  const listRefreshMs = deploymentListRefreshMs(listQuery.data);
+  useLiveRefresh(
+    () => {
+      if (!listQuery.isPending) listQuery.refresh();
+    },
+    {
+      key: deploymentListRefreshKey(listTarget),
+      enabled: listRefreshMs !== null,
+      intervalMs: listRefreshMs,
+    },
+  );
+  // A build log grows until the build ends. Runtime logs never end, so they are read again only
+  // when the user comes back to the window.
+  const logsLive = logsQuery.data?.live === true;
+  useLiveRefresh(
+    () => {
+      if (!logsQuery.isPending) logsQuery.refresh();
+    },
+    {
+      key: `deployment-logs:${environmentId}:${hostname}:${source}`,
+      enabled: logsLive || (source === "runtime" && logsQuery.data !== null),
+      intervalMs: logsLive ? DEPLOYMENT_IN_PROGRESS_REFRESH_MS : null,
+    },
   );
 
   if (listQuery.data === null && listQuery.error === null) return <DeploymentDetailGhost />;

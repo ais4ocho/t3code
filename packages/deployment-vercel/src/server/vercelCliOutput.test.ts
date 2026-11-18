@@ -18,22 +18,22 @@ const fixture = (name: string) =>
 
 describe("vercelCliOutput", () => {
   it("reads a deployment list and leaves out states it does not know", () => {
-    const list = parseDeploymentList(fixture("ls.json"));
-    assert.strictEqual(list?.projectName, "storefront");
+    const deployments = parseDeploymentList(fixture("ls.json"));
     assert.deepStrictEqual(
-      list?.deployments.map((deployment) => [
+      deployments?.map((deployment) => [
         deployment.hostname,
         deployment.state,
         deployment.target,
         deployment.branch,
       ]),
       [
-        ["storefront-re2dxyute-acme.vercel.app", "ready", "production", "main"],
-        ["storefront-jlik23lxu-acme.vercel.app", "building", "preview", "checkout"],
-        ["storefront-1mv84eynf-acme.vercel.app", "ready", "production", "main"],
+        ["storefront-a1b2c3d4e-acme.vercel.app", "ready", "production", "main"],
+        ["storefront-f5g6h7i8j-acme.vercel.app", "building", "preview", "checkout"],
+        ["storefront-k9l0m1n2o-acme.vercel.app", "ready", "production", "main"],
+        ["storefront-p3q4r5s6t-acme.vercel.app", "error", "preview", "checkout"],
       ],
     );
-    const [first, building] = list!.deployments;
+    const [first, building] = deployments!;
     assert.strictEqual(first!.commitTitle, "Merge pull request #7 from acme/checkout");
     assert.strictEqual(first!.commitSha, "0000000000000000000000000000000000000001");
     assert.strictEqual(first!.creator, "octocat");
@@ -59,10 +59,20 @@ describe("vercelCliOutput", () => {
     assert.strictEqual(
       cliFailureDetail({
         ...failed,
-        stderr: "Vercel CLI 64.0.2\n\u001b[31mError:\u001b[39m nope\n",
+        stderr:
+          "Vercel CLI 64.0.2\n\u001b[31mError:\u001b[39m The specified scope does not exist\nLearn More: https://err.sh/vercel/scope-not-existent\n",
       }),
-      "Error: nope",
+      "Error: The specified scope does not exist",
     );
+    assert.strictEqual(
+      cliFailureDetail({
+        ...failed,
+        stderr:
+          '{"status":"error","reason":"missing_scope","message":"Logs are available for team-owned projects only."}\n',
+      }),
+      "Logs are available for team-owned projects only.",
+    );
+    assert.strictEqual(cliFailureDetail({ ...failed, stderr: "nope\n" }), "nope");
     assert.strictEqual(cliFailureDetail(failed), "The Vercel CLI exited with code 1.");
     assert.strictEqual(
       cliFailureDetail({ ...failed, exitCode: 0 }),
@@ -74,7 +84,7 @@ describe("vercelCliOutput", () => {
     assert.strictEqual(parseDeploymentState('{"id":"dpl_1","readyState":"BUILDING"}'), "building");
     assert.strictEqual(parseDeploymentState('{"id":"dpl_1","readyState":"ERROR"}'), "error");
     assert.strictEqual(parseDeploymentState('{"id":"dpl_1","readyState":"DELETED"}'), undefined);
-    assert.strictEqual(parseDeploymentState("Error: nope"), undefined);
+    assert.strictEqual(parseDeploymentState("Error: nope"), null);
   });
 
   it("reads who is signed in", () => {

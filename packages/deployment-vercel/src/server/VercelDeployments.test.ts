@@ -132,6 +132,25 @@ describe("Vercel deployments", () => {
     }).pipe(Effect.scoped, Effect.provide(vercel.layer));
   });
 
+  it.effect("fails a build log whose deployment state could not be read", () => {
+    const vercel = fakeVercel((args) => {
+      if (args[0] === "whoami") return { stdout: signedIn };
+      return args.includes("--logs")
+        ? { stdout: "[]" }
+        : { exitCode: 1, stderr: "Error: Deployment not found\n" };
+    });
+    return Effect.gen(function* () {
+      const provider = yield* VercelDeployments.make;
+      const project = yield* provider.projectFor(yield* linkedCheckout("team_1"));
+      const error = yield* Effect.flip(project!.logs({ hostname, source: "build" }));
+      assert.strictEqual(error.detail, "Error: Deployment not found");
+      assert.strictEqual(
+        vercel.invocations.some((args) => args.includes("--logs")),
+        false,
+      );
+    }).pipe(Effect.scoped, Effect.provide(vercel.layer));
+  });
+
   it.effect("marks a build log live while the deployment is still building", () => {
     const vercel = fakeVercel((args) => {
       if (args[0] === "whoami") return { stdout: signedIn };

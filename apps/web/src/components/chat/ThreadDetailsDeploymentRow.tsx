@@ -2,14 +2,16 @@ import {
   deploymentTargetLabel,
   deploymentTitle,
 } from "@t3tools/client-runtime/deployment-presentation";
+import { deploymentListRefreshMs } from "@t3tools/client-runtime/state/deployments";
 import { selectEnvironmentQueryData } from "@t3tools/client-runtime/state/runtime";
 import type { ProjectId, ScopedThreadRef } from "@t3tools/contracts";
 
+import { useLiveRefresh } from "~/hooks/useLiveRefresh";
 import { cn } from "~/lib/utils";
 import { useRightPanelStore } from "~/rightPanelStore";
-import { deploymentEnvironment } from "~/state/deployments";
+import { deploymentEnvironment, deploymentListRefreshKey } from "~/state/deployments";
 import { useServerConfigs } from "~/state/entities";
-import { useEnvironmentQuerySelector } from "~/state/query";
+import { useEnvironmentQueryRefresh, useEnvironmentQuerySelector } from "~/state/query";
 
 import { deploymentStateMark } from "../deployment/deploymentPresentation";
 import { ThreadDetailsControl } from "./ThreadDetailsControl";
@@ -31,11 +33,24 @@ export function ThreadDetailsDeploymentRow({
   const { environmentId } = threadRef;
   const supported =
     useServerConfigs().get(environmentId)?.environment.capabilities.deployments === true;
-  const list = useEnvironmentQuerySelector(
+  const target =
     supported && projectId !== null && branch !== null
-      ? deploymentEnvironment.list({ environmentId, input: { projectId, branch } })
-      : null,
-    selectEnvironmentQueryData,
+      ? { environmentId, input: { projectId, branch } }
+      : null;
+  const atom = target === null ? null : deploymentEnvironment.list(target);
+  const list = useEnvironmentQuerySelector(atom, selectEnvironmentQueryData);
+  const query = useEnvironmentQueryRefresh(atom);
+  const refreshMs = deploymentListRefreshMs(list);
+  useLiveRefresh(
+    () => {
+      if (!query.isPending()) query.refresh();
+    },
+    {
+      // The panel this row opens reads the same list under the same name.
+      ...(target === null ? {} : { key: deploymentListRefreshKey(target) }),
+      enabled: target !== null && refreshMs !== null,
+      intervalMs: refreshMs,
+    },
   );
   const deployment = list?.status === "linked" ? list.deployments[0] : undefined;
   if (deployment === undefined || projectId === null || branch === null) return null;

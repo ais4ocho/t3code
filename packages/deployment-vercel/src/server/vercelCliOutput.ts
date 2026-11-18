@@ -80,6 +80,8 @@ const STATES: Readonly<Record<string, DeploymentState>> = {
   BUILDING: "building",
   READY: "ready",
   ERROR: "error",
+  // Stopped by the account, such as a spend limit, before it could build.
+  BLOCKED: "error",
   CANCELED: "canceled",
 };
 
@@ -128,11 +130,8 @@ function deploymentFrom(raw: unknown): Deployment | null {
   };
 }
 
-/** `vercel ls --json`. Null when the output is not a deployment list at all. */
-export function parseDeploymentList(stdout: string): {
-  readonly projectName: string | undefined;
-  readonly deployments: ReadonlyArray<Deployment>;
-} | null {
+/** `vercel ls --json`, newest first. Null when the output is not a deployment list at all. */
+export function parseDeploymentList(stdout: string): ReadonlyArray<Deployment> | null {
   const list = Option.getOrUndefined(decodeDeploymentList(stdout));
   if (list === undefined) return null;
   const deployments: Deployment[] = [];
@@ -140,8 +139,7 @@ export function parseDeploymentList(stdout: string): {
     const deployment = deploymentFrom(raw);
     if (deployment !== null) deployments.push(deployment);
   }
-  const first = Option.getOrUndefined(decodeDeployment(list.deployments[0]));
-  return { projectName: nonEmpty(first?.name), deployments };
+  return deployments;
 }
 
 const RawCliError = Schema.Struct({
@@ -154,20 +152,28 @@ const decodeCliError = Schema.decodeUnknownOption(Schema.fromJsonString(RawCliEr
 const MAX_DETAIL_LENGTH = 300;
 
 /**
- * Why a command's output is no use, in the CLI's own words: the error object it prints on stdout
- * under `--json`, else the last thing it wrote to stderr.
+ * Why a command's output is no use, in the CLI's own words. Under `--json` it prints an error
+ * object, on stdout or as the last line of stderr; otherwise an `Error:` line, sometimes followed
+ * by a link.
  */
 export function cliFailureDetail(output: {
   readonly exitCode: number;
   readonly stdout: string;
   readonly stderr: string;
 }): string {
-  const error = Option.getOrUndefined(decodeCliError(output.stdout));
-  const said =
+  const said = NodeUtil.stripVTControlCharacters(output.stderr)
+    .split(/\r?\n/u)
+    .flatMap((line) => nonEmpty(line) ?? []);
+  const error = decodeCliError(output.stdout).pipe(
+    Option.orElse(() => decodeCliError(said.at(-1) ?? "")),
+    Option.getOrUndefined,
+  );
+  const detail =
     nonEmpty(error?.message) ??
     nonEmpty(error?.reason) ??
-    nonEmpty(NodeUtil.stripVTControlCharacters(output.stderr).trim().split(/\r?\n/u).at(-1));
-  if (said !== undefined) return said.slice(0, MAX_DETAIL_LENGTH);
+    said.findLast((line) => line.startsWith("Error:")) ??
+    said.at(-1);
+  if (detail !== undefined) return detail.slice(0, MAX_DETAIL_LENGTH);
   return output.exitCode === 0
     ? "The Vercel CLI returned output T3 Code could not read."
     : `The Vercel CLI exited with code ${output.exitCode}.`;
@@ -177,10 +183,13 @@ const decodeReadyState = Schema.decodeUnknownOption(
   Schema.fromJsonString(Schema.Struct({ readyState: Schema.String })),
 );
 
-/** `vercel inspect --json`. Undefined for output that names no state this build knows. */
-export function parseDeploymentState(stdout: string): DeploymentState | undefined {
+/**
+ * `vercel inspect --json`. Null when the output is not a deployment at all; undefined for a state
+ * this build does not know.
+ */
+export function parseDeploymentState(stdout: string): DeploymentState | undefined | null {
   const deployment = Option.getOrUndefined(decodeReadyState(stdout));
-  return deployment === undefined ? undefined : STATES[deployment.readyState];
+  return deployment === undefined ? null : STATES[deployment.readyState];
 }
 
 export interface VercelLogLines {

@@ -95,11 +95,13 @@ describe("DeploymentService", () => {
     }).pipe(Effect.provide(layer));
   });
 
-  it.effect("shares one read between readers that arrive together", () => {
+  it.effect("shares one read between readers that arrive within its cache window", () => {
     const { layer, reads } = serviceFor({});
     return Effect.gen(function* () {
       const deployments = yield* service;
-      yield* deployments.list({ projectId });
+      yield* Effect.all([deployments.list({ projectId }), deployments.list({ projectId })], {
+        concurrency: "unbounded",
+      });
       yield* deployments.list({ projectId });
       assert.deepStrictEqual(reads, ["list"]);
       yield* deployments.list({ projectId, branch: "checkout" });

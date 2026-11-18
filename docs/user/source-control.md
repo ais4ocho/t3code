@@ -396,7 +396,8 @@ there, sign in with `vercel login`, and link the project folder with `vercel lin
 which account it is signed in to.
 
 Monorepo links through `.vercel/repo.json` and providers other than Vercel are not supported yet.
-Runtime logs cover the last 24 hours and need a team-owned Vercel project.
+Runtime logs cover the last 24 hours and need a team-owned Vercel project. The deployment in a
+thread's details needs a Vercel project connected to GitHub.
 
 ## GitHub stacks
 

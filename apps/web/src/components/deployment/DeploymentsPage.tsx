@@ -1,5 +1,7 @@
 import { useAtomValue } from "@effect/atom-react";
 import {
+  DEPLOYMENT_IN_PROGRESS_REFRESH_MS,
+  deploymentTargetsInProgress,
   listDeploymentsAcrossProjects,
   type ListedDeployment,
 } from "@t3tools/client-runtime/state/deployments";
@@ -29,6 +31,7 @@ import {
 import { SidebarInset } from "~/components/ui/sidebar";
 import { isCommandPaletteOpen } from "~/commandPaletteBus";
 import { isElectron } from "~/env";
+import { useLiveRefresh } from "~/hooks/useLiveRefresh";
 import { resolveShortcutCommand, shortcutLabelForCommand } from "~/keybindings";
 import { isTerminalFocused } from "~/lib/terminalFocus";
 import { usePanelAnimationSettings, usePanelPresence } from "~/panelAnimations";
@@ -101,6 +104,15 @@ export function DeploymentsPage() {
     );
   const list = useDeploymentLists(targets);
   const rows = listDeploymentsAcrossProjects(list.projects);
+  // Every project now and then; the ones with a deployment in progress much more often.
+  const refreshKey = JSON.stringify(targets);
+  const inProgress = deploymentTargetsInProgress(list.projects);
+  useLiveRefresh(() => list.refresh(), { key: refreshKey, intervalMs: 60_000 });
+  useLiveRefresh(() => list.refresh(inProgress), {
+    key: `${refreshKey}:in-progress`,
+    intervalMs: DEPLOYMENT_IN_PROGRESS_REFRESH_MS,
+    enabled: inProgress.length > 0,
+  });
   // Every project of a signed-out provider carries the same hint, so it is said once.
   const unavailableByHint = new Map<string, Set<string>>();
   for (const { result } of list.projects) {
@@ -210,7 +222,7 @@ export function DeploymentsPage() {
     <PullRequestsUnavailableState
       title="Could not load deployments"
       error={list.error}
-      onRetry={list.refresh}
+      onRetry={() => list.refresh()}
       refreshing={list.isPending}
     />
   ) : nothingListed ? (
@@ -231,7 +243,7 @@ export function DeploymentsPage() {
       {list.error ? (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-warning/30 bg-warning-surface px-3 py-2 text-xs">
           <span>{list.error} Showing the deployments that loaded.</span>
-          <Button size="xs" variant="outline" onClick={list.refresh}>
+          <Button size="xs" variant="outline" onClick={() => list.refresh()}>
             Retry
           </Button>
         </div>
@@ -248,14 +260,9 @@ export function DeploymentsPage() {
         <div className="flex flex-col gap-1">
           {rows.map((row) => (
             <DeploymentRow
-              key={`${row.environmentId}:${row.projectId}:${row.deployment.hostname}`}
+              key={row.deployment.hostname}
               entry={row}
-              selected={
-                renderedSurface !== null &&
-                renderedSurface.hostname === row.deployment.hostname &&
-                renderedSurface.projectId === row.projectId &&
-                panelEnvironmentId === row.environmentId
-              }
+              selected={renderedSurface?.hostname === row.deployment.hostname}
               onSelect={selectEntry}
             />
           ))}
@@ -320,7 +327,7 @@ export function DeploymentsPage() {
                   size="icon"
                   variant="outline"
                   aria-label="Refresh deployments"
-                  onClick={list.refresh}
+                  onClick={() => list.refresh()}
                   disabled={list.isPending}
                 >
                   <RefreshIcon size="md" refreshing={list.isPending} />

@@ -105,13 +105,16 @@ export type DeploymentListResult = typeof DeploymentListResult.Type;
 export const DeploymentLogSource = Schema.Literals(["build", "runtime"]);
 export type DeploymentLogSource = typeof DeploymentLogSource.Type;
 
-const DeploymentLogCursor = Schema.String.check(Schema.isPattern(/^[A-Za-z0-9_=-]{1,4096}$/u));
+/** It reaches a CLI as an argument, so like a hostname it can never start with `-`. */
+const DeploymentLogCursor = Schema.String.check(
+  Schema.isPattern(/^[A-Za-z0-9_][A-Za-z0-9_=-]{0,4095}$/u),
+);
 
 export const DeploymentLogsInput = Schema.Struct({
   projectId: ProjectId,
   hostname: DeploymentHostname,
   source: DeploymentLogSource,
-  /** A `nextCursor` from an earlier page of the same logs. It reaches a CLI as an argument. */
+  /** A `nextCursor` from an earlier page of the same logs. */
   cursor: Schema.optional(DeploymentLogCursor),
 });
 export type DeploymentLogsInput = typeof DeploymentLogsInput.Type;

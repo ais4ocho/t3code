@@ -20,24 +20,26 @@ function isDeploymentInProgress(deployment: Pick<Deployment, "state">): boolean 
   return deployment.state === "queued" || deployment.state === "building";
 }
 
-// A build moves through its states within seconds.
-const IN_PROGRESS_LIST_REFRESH_MS = 8_000;
+/** A build moves through its states, and writes its log, within seconds. */
+export const DEPLOYMENT_IN_PROGRESS_REFRESH_MS = 12_000;
 // Nothing announces a push that starts a deployment, so a quiet list is still read now and then.
-// A read that failed is tried again at the same pace.
-const QUIET_REFRESH_MS = 60_000;
-const LIVE_LOGS_REFRESH_MS = 5_000;
+const QUIET_LIST_REFRESH_MS = 60_000;
 
-/** How long a project's deployment list may be shown before it is read again. */
-export function deploymentListRefreshMs(result: Option.Option<DeploymentListResult>): number {
-  const list = Option.getOrUndefined(result);
+/**
+ * How long a view may show a project's deployment list before reading it again; null when
+ * nothing but a new link can change it. A list not read yet, or one that failed, is tried again
+ * at the quiet pace.
+ */
+export function deploymentListRefreshMs(list: DeploymentListResult | null): number | null {
+  if (list?.status === "unlinked") return null;
   return list?.status === "linked" && list.deployments.some(isDeploymentInProgress)
-    ? IN_PROGRESS_LIST_REFRESH_MS
-    : QUIET_REFRESH_MS;
+    ? DEPLOYMENT_IN_PROGRESS_REFRESH_MS
+    : QUIET_LIST_REFRESH_MS;
 }
 
 /**
- * Every read spawns the provider's CLI on the server, so a list is re-read only as often as its
- * own state calls for, and logs only while the deployment is still writing them.
+ * Every read spawns the provider's CLI on the server, so nothing here reads on a timer of its
+ * own: each client refreshes at the pace above while its view is on screen and in use.
  */
 export function createDeploymentEnvironmentAtoms<R, E>(
   runtime: Atom.AtomRuntime<EnvironmentRegistry | R, E>,
@@ -54,17 +56,12 @@ export function createDeploymentEnvironmentAtoms<R, E>(
       label: "environment-data:deployments:list",
       tag: WS_METHODS.deploymentsList,
       staleTimeMs: 30_000,
-      refreshIntervalMs: deploymentListRefreshMs,
-      // A project with no provider, or one the server cannot read, changes only by hand.
-      isFinal: (result) => result.status !== "linked",
     }),
     /** The newest page of a deployment's logs. */
     logs: createEnvironmentRpcQueryAtomFamily(runtime, {
       label: "environment-data:deployments:logs",
       tag: WS_METHODS.deploymentsLogs,
       staleTimeMs: 30_000,
-      refreshIntervalMs: (page) => (Option.isSome(page) ? LIVE_LOGS_REFRESH_MS : QUIET_REFRESH_MS),
-      isFinal: (page) => !page.live,
     }),
     /** An older page past a cursor, run as a command: the panel prepends what arrives. */
     olderLogs: createEnvironmentRpcCommand(runtime, {
@@ -149,6 +146,15 @@ export function createMergedDeploymentListAtoms<E>(
       for (const target of targets) registry.refresh(list(target));
     },
   };
+}
+
+/** The projects with a deployment in progress, which a list across projects reads more often. */
+export function deploymentTargetsInProgress(
+  projects: ReadonlyArray<ProjectDeployments>,
+): ReadonlyArray<DeploymentListTarget> {
+  return projects.flatMap(({ target, result }) =>
+    result.status === "linked" && result.deployments.some(isDeploymentInProgress) ? [target] : [],
+  );
 }
 
 /** A deployment with the project it belongs to, as a list across projects shows it. */

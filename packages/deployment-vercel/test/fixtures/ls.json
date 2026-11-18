@@ -2,7 +2,7 @@
   "contextName": "acme",
   "deployments": [
     {
-      "url": "storefront-re2dxyute-acme.vercel.app",
+      "url": "storefront-a1b2c3d4e-acme.vercel.app",
       "name": "storefront",
       "state": "READY",
       "target": "production",
@@ -38,7 +38,7 @@
       }
     },
     {
-      "url": "storefront-jlik23lxu-acme.vercel.app",
+      "url": "storefront-f5g6h7i8j-acme.vercel.app",
       "name": "storefront",
       "state": "BUILDING",
       "target": null,
@@ -74,7 +74,7 @@
       }
     },
     {
-      "url": "storefront-1mv84eynf-acme.vercel.app",
+      "url": "storefront-k9l0m1n2o-acme.vercel.app",
       "name": "storefront",
       "state": "READY",
       "target": "production",
@@ -110,6 +110,22 @@
       }
     },
     {
+      "url": "storefront-p3q4r5s6t-acme.vercel.app",
+      "name": "storefront",
+      "state": "BLOCKED",
+      "target": null,
+      "createdAt": 1794598500000,
+      "creator": {
+        "uid": "uid_1",
+        "username": "octocat"
+      },
+      "meta": {
+        "githubCommitRef": "checkout",
+        "githubCommitSha": "0000000000000000000000000000000000000004",
+        "githubCommitMessage": "Raise the upload limit"
+      }
+    },
+    {
       "url": "storefront-gone-acme.vercel.app",
       "name": "storefront",
       "state": "DELETED",
@@ -117,7 +133,7 @@
     }
   ],
   "pagination": {
-    "count": 4,
+    "count": 5,
     "next": null,
     "prev": null
   }

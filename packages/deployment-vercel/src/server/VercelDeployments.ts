@@ -144,45 +144,47 @@ export const make = Effect.gen(function* () {
             "--limit",
             LIST_LIMIT,
             ...scope,
-            // Only GitHub-connected projects carry this key; other hosts list unfiltered by it.
+            // Only GitHub-connected projects carry this key, so a project on another git host
+            // lists nothing for a branch.
             ...(input.branch === undefined ? [] : ["--meta", `githubCommitRef=${input.branch}`]),
           ],
           timeoutMs: 20_000,
         });
-        const list = parseDeploymentList(output.stdout);
-        if (list === null) return yield* failure("list", "failed", cliFailureDetail(output));
-        return list.deployments;
+        const deployments = parseDeploymentList(output.stdout);
+        if (deployments === null) {
+          return yield* failure("list", "failed", cliFailureDetail(output));
+        }
+        return deployments;
       }),
       logs: Effect.fn("VercelDeployments.logs")(function* (input) {
         yield* requireSignIn;
         if (input.source === "build") {
           // The events say nothing about whether more will follow; the deployment's state does.
+          // It is read first, so a deployment that says it has finished has written them all.
           // `vercel inspect` exits 1 for a failed or canceled deployment, so only its output
           // tells a failed read from a failed deployment.
-          const [events, deployment] = yield* Effect.all(
-            [
-              run({
-                operation: "logs",
-                cwd: workspaceRoot,
-                args: ["inspect", input.hostname, "--logs", "--json", ...scope],
-                timeoutMs: 30_000,
-                maxOutputBytes: BUILD_LOG_OUTPUT_BYTES,
-              }),
-              run({
-                operation: "logs",
-                cwd: workspaceRoot,
-                args: ["inspect", input.hostname, "--json", ...scope],
-                timeoutMs: 30_000,
-              }),
-            ],
-            { concurrency: 2 },
-          );
+          const deployment = yield* run({
+            operation: "logs",
+            cwd: workspaceRoot,
+            args: ["inspect", input.hostname, "--json", ...scope],
+            timeoutMs: 30_000,
+          });
+          const state = parseDeploymentState(deployment.stdout);
+          if (state === null) {
+            return yield* failure("logs", "failed", cliFailureDetail(deployment));
+          }
+          const events = yield* run({
+            operation: "logs",
+            cwd: workspaceRoot,
+            args: ["inspect", input.hostname, "--logs", "--json", ...scope],
+            timeoutMs: 30_000,
+            maxOutputBytes: BUILD_LOG_OUTPUT_BYTES,
+          });
           if (events.truncated) {
             return yield* failure("logs", "failed", "The build log is too large to read here.");
           }
           const page = parseBuildLogs(events.stdout);
           if (page === null) return yield* failure("logs", "failed", cliFailureDetail(events));
-          const state = parseDeploymentState(deployment.stdout);
           return { ...page, nextCursor: null, live: state === "queued" || state === "building" };
         }
         const output = yield* runExpectingSuccess({

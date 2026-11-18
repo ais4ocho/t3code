@@ -6,11 +6,11 @@ import {
   type DeploymentHostname,
   type DeploymentListResult,
 } from "@t3tools/contracts";
-import * as Option from "effect/Option";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
   deploymentListRefreshMs,
+  deploymentTargetsInProgress,
   listDeploymentsAcrossProjects,
   type ProjectDeployments,
 } from "./deployments.ts";
@@ -40,15 +40,16 @@ const linked = (
 });
 
 describe("deploymentListRefreshMs", () => {
-  it("reads again sooner while a deployment is in progress", () => {
+  it("reads again sooner while a deployment is in progress, and never for an unlinked project", () => {
     const quiet = linked("storefront", [deployment("a", "2026-11-13T10:00:00.000Z")]);
     const busy = linked("storefront", [
       deployment("b", "2026-11-13T11:00:00.000Z", "building"),
       ...quiet.deployments,
     ]);
-    const quietMs = deploymentListRefreshMs(Option.some(quiet));
-    expect(deploymentListRefreshMs(Option.some(busy))).toBeLessThan(quietMs);
-    expect(deploymentListRefreshMs(Option.none())).toBe(quietMs);
+    const quietMs = deploymentListRefreshMs(quiet)!;
+    expect(deploymentListRefreshMs(busy)).toBeLessThan(quietMs);
+    expect(deploymentListRefreshMs(null)).toBe(quietMs);
+    expect(deploymentListRefreshMs({ status: "unlinked" })).toBeNull();
   });
 });
 
@@ -85,6 +86,7 @@ describe("listDeploymentsAcrossProjects", () => {
         result: linked("storefront", [deployment("a3", "2026-11-13T12:00:00.000Z")]),
       },
     ];
+    expect(deploymentTargetsInProgress(projects)).toEqual([]);
     expect(
       listDeploymentsAcrossProjects(projects).map((entry) => [
         entry.projectName,
