@@ -2,7 +2,11 @@ import * as Schema from "effect/Schema";
 
 import { IsoDateTime, ProjectId, TrimmedNonEmptyString } from "./baseSchemas.ts";
 
-export const DeploymentProviderKind = Schema.Literals(["vercel"]);
+/** Open, so a client keeps reading a server that knows a provider it does not. */
+export const DeploymentProviderKind = TrimmedNonEmptyString.check(
+  Schema.isMaxLength(64),
+  Schema.isPattern(/^[a-z][a-z0-9-]*$/),
+).pipe(Schema.brand("DeploymentProviderKind"));
 export type DeploymentProviderKind = typeof DeploymentProviderKind.Type;
 
 export const DeploymentState = Schema.Literals([
@@ -30,12 +34,12 @@ export const Deployment = Schema.Struct({
   state: DeploymentState,
   target: DeploymentTarget,
   createdAt: IsoDateTime,
-  readyAt: Schema.optionalKey(IsoDateTime),
-  branch: Schema.optionalKey(TrimmedNonEmptyString),
-  commitSha: Schema.optionalKey(TrimmedNonEmptyString),
+  readyAt: Schema.optional(IsoDateTime),
+  branch: Schema.optional(TrimmedNonEmptyString),
+  commitSha: Schema.optional(TrimmedNonEmptyString),
   /** The commit's first line. */
-  commitTitle: Schema.optionalKey(TrimmedNonEmptyString),
-  creator: Schema.optionalKey(TrimmedNonEmptyString),
+  commitTitle: Schema.optional(TrimmedNonEmptyString),
+  creator: Schema.optional(TrimmedNonEmptyString),
 });
 export type Deployment = typeof Deployment.Type;
 
@@ -51,10 +55,10 @@ export const DeploymentProviderDiscoveryItem = Schema.Struct({
   label: TrimmedNonEmptyString,
   executable: TrimmedNonEmptyString,
   status: Schema.Literals(["available", "missing"]),
-  version: Schema.optionalKey(TrimmedNonEmptyString),
+  version: Schema.optional(TrimmedNonEmptyString),
   installHint: TrimmedNonEmptyString,
   auth: DeploymentAuthStatus,
-  account: Schema.optionalKey(TrimmedNonEmptyString),
+  account: Schema.optional(TrimmedNonEmptyString),
 });
 export type DeploymentProviderDiscoveryItem = typeof DeploymentProviderDiscoveryItem.Type;
 
@@ -67,16 +71,22 @@ export const DeploymentListInput = Schema.Struct({
   projectId: ProjectId,
   /** Only deployments built from this branch. */
   branch: Schema.optional(TrimmedNonEmptyString.check(Schema.isMaxLength(255))),
-  /** Skips the server's cache, for a refresh the user asked for. */
-  fresh: Schema.optional(Schema.Boolean),
 });
 export type DeploymentListInput = typeof DeploymentListInput.Type;
+
+export const DeploymentUnavailableReason = Schema.Literals([
+  "tool-missing",
+  "unauthenticated",
+  "unlinked",
+]);
+export type DeploymentUnavailableReason = typeof DeploymentUnavailableReason.Type;
 
 export const DeploymentListResult = Schema.Union([
   Schema.Struct({
     status: Schema.Literal("linked"),
     provider: DeploymentProviderKind,
     projectName: TrimmedNonEmptyString,
+    /** Newest first. */
     deployments: Schema.Array(Deployment),
   }),
   /** No deployment provider claims the project's checkout. */
@@ -86,7 +96,7 @@ export const DeploymentListResult = Schema.Union([
     status: Schema.Literal("unavailable"),
     provider: DeploymentProviderKind,
     projectName: TrimmedNonEmptyString,
-    reason: Schema.Literals(["missing-cli", "unauthenticated"]),
+    reason: Schema.Literals(["tool-missing", "unauthenticated"]),
     hint: TrimmedNonEmptyString,
   }),
 ]);
@@ -95,18 +105,21 @@ export type DeploymentListResult = typeof DeploymentListResult.Type;
 export const DeploymentLogSource = Schema.Literals(["build", "runtime"]);
 export type DeploymentLogSource = typeof DeploymentLogSource.Type;
 
+const DeploymentLogCursor = Schema.String.check(Schema.isPattern(/^[A-Za-z0-9_=-]{1,4096}$/u));
+
 export const DeploymentLogsInput = Schema.Struct({
   projectId: ProjectId,
   hostname: DeploymentHostname,
   source: DeploymentLogSource,
-  /** A `next` from an earlier page of the same logs. It reaches a CLI as an argument. */
-  cursor: Schema.optional(Schema.String.check(Schema.isPattern(/^[A-Za-z0-9_=-]{1,4096}$/u))),
+  /** A `nextCursor` from an earlier page of the same logs. It reaches a CLI as an argument. */
+  cursor: Schema.optional(DeploymentLogCursor),
 });
 export type DeploymentLogsInput = typeof DeploymentLogsInput.Type;
 
 export const DeploymentLogLine = Schema.Struct({
-  at: Schema.optionalKey(IsoDateTime),
-  level: Schema.optionalKey(Schema.Literals(["info", "warning", "error"])),
+  at: Schema.optional(IsoDateTime),
+  /** Absent for an ordinary line. */
+  level: Schema.optional(Schema.Literals(["warning", "error"])),
   text: Schema.String,
 });
 export type DeploymentLogLine = typeof DeploymentLogLine.Type;
@@ -116,43 +129,45 @@ export const DeploymentLogPage = Schema.Struct({
   lines: Schema.Array(DeploymentLogLine),
   /** The provider had more than the server was willing to carry, so some lines are missing. */
   truncated: Schema.Boolean,
-  /** Reads the next older page. */
-  next: Schema.optionalKey(Schema.String),
+  /** Reads the next older page. Null when there is none. */
+  nextCursor: Schema.NullOr(DeploymentLogCursor),
+  /** The deployment is still building, so reading again later returns more. */
+  live: Schema.Boolean,
 });
 export type DeploymentLogPage = typeof DeploymentLogPage.Type;
 
-export const DeploymentErrorReason = Schema.Literals([
-  "project-not-found",
-  "unlinked",
-  "missing-cli",
-  "unauthenticated",
-  "timeout",
-  "unreadable-output",
-  "failed",
-]);
-export type DeploymentErrorReason = typeof DeploymentErrorReason.Type;
-
-export class DeploymentError extends Schema.TaggedError<DeploymentError>()("DeploymentError", {
-  reason: DeploymentErrorReason,
-  provider: Schema.optional(DeploymentProviderKind),
-  cause: Schema.optional(Schema.Defect()),
-}) {
+/** The provider cannot be read at all for this project, as opposed to one request failing. */
+export class DeploymentUnavailableError extends Schema.TaggedError<DeploymentUnavailableError>()(
+  "DeploymentUnavailableError",
+  {
+    reason: DeploymentUnavailableReason,
+    provider: Schema.optional(DeploymentProviderKind),
+    cause: Schema.optional(Schema.Defect()),
+  },
+) {
   override get message(): string {
     switch (this.reason) {
-      case "project-not-found":
-        return "This project no longer exists on the server.";
-      case "unlinked":
-        return "This project is not linked to a deployment provider.";
-      case "missing-cli":
+      case "tool-missing":
         return "The deployment provider's CLI is not installed on the server.";
       case "unauthenticated":
         return "The deployment provider's CLI is signed out on the server.";
-      case "timeout":
-        return "The deployment provider did not answer in time.";
-      case "unreadable-output":
-        return "The deployment provider's CLI returned output T3 Code could not read.";
-      case "failed":
-        return "The deployment provider's CLI failed.";
+      case "unlinked":
+        return "This project is not linked to a deployment provider.";
     }
   }
 }
+
+export class DeploymentOperationError extends Schema.TaggedError<DeploymentOperationError>()(
+  "DeploymentOperationError",
+  {
+    operation: Schema.String,
+    detail: TrimmedNonEmptyString,
+    cause: Schema.optional(Schema.Defect()),
+  },
+) {
+  override get message(): string {
+    return `Deployment operation ${this.operation} failed: ${this.detail}`;
+  }
+}
+
+export type DeploymentError = DeploymentUnavailableError | DeploymentOperationError;

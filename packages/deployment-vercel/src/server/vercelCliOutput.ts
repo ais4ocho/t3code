@@ -2,14 +2,16 @@ import * as NodeUtil from "node:util";
 import {
   type Deployment,
   DeploymentHostname,
+  DeploymentProviderKind,
   type DeploymentAuthStatus,
   type DeploymentLogLine,
-  type DeploymentLogPage,
   type DeploymentState,
 } from "@t3tools/contracts";
 import * as DateTime from "effect/DateTime";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
+
+export const VERCEL = DeploymentProviderKind.make("vercel");
 
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown));
 
@@ -112,22 +114,17 @@ function deploymentFrom(raw: unknown): Deployment | null {
   const createdAt = isoTime(row.createdAt);
   if (state === undefined || createdAt === undefined || !isHostname(row.url)) return null;
   const meta = row.meta ?? {};
-  const readyAt = row.ready == null ? undefined : isoTime(row.ready);
-  const branch = gitMeta(meta, "CommitRef");
-  const commitSha = gitMeta(meta, "CommitSha");
-  const commitTitle = nonEmpty(gitMeta(meta, "CommitMessage")?.split("\n", 1)[0]?.slice(0, 200));
-  const creator = nonEmpty(row.creator?.username);
   return {
-    provider: "vercel",
+    provider: VERCEL,
     hostname: row.url,
     state,
     target: row.target === "production" ? "production" : "preview",
     createdAt,
-    ...(readyAt === undefined ? {} : { readyAt }),
-    ...(branch === undefined ? {} : { branch }),
-    ...(commitSha === undefined ? {} : { commitSha }),
-    ...(commitTitle === undefined ? {} : { commitTitle }),
-    ...(creator === undefined ? {} : { creator }),
+    readyAt: row.ready == null ? undefined : isoTime(row.ready),
+    branch: gitMeta(meta, "CommitRef"),
+    commitSha: gitMeta(meta, "CommitSha"),
+    commitTitle: nonEmpty(gitMeta(meta, "CommitMessage")?.split("\n", 1)[0]?.slice(0, 200)),
+    creator: nonEmpty(row.creator?.username),
   };
 }
 
@@ -147,40 +144,93 @@ export function parseDeploymentList(stdout: string): {
   return { projectName: nonEmpty(first?.name), deployments };
 }
 
-const RawCliError = Schema.Struct({ status: Schema.Literal("error"), reason: Schema.String });
+const RawCliError = Schema.Struct({
+  status: Schema.Literal("error"),
+  reason: Schema.optional(Schema.String),
+  message: Schema.optional(Schema.String),
+});
 const decodeCliError = Schema.decodeUnknownOption(Schema.fromJsonString(RawCliError));
 
-/** The `reason` of the error object the CLI prints on stdout under `--json`. */
-export function parseCliErrorReason(stdout: string): string | undefined {
-  return Option.getOrUndefined(decodeCliError(stdout))?.reason;
+const MAX_DETAIL_LENGTH = 300;
+
+/**
+ * Why a command's output is no use, in the CLI's own words: the error object it prints on stdout
+ * under `--json`, else the last thing it wrote to stderr.
+ */
+export function cliFailureDetail(output: {
+  readonly exitCode: number;
+  readonly stdout: string;
+  readonly stderr: string;
+}): string {
+  const error = Option.getOrUndefined(decodeCliError(output.stdout));
+  const said =
+    nonEmpty(error?.message) ??
+    nonEmpty(error?.reason) ??
+    nonEmpty(NodeUtil.stripVTControlCharacters(output.stderr).trim().split(/\r?\n/u).at(-1));
+  if (said !== undefined) return said.slice(0, MAX_DETAIL_LENGTH);
+  return output.exitCode === 0
+    ? "The Vercel CLI returned output T3 Code could not read."
+    : `The Vercel CLI exited with code ${output.exitCode}.`;
 }
 
-const BUILD_LOG_LINE = /^(\d{4}-\d{2}-\d{2}T[\d:.]+Z) {2}(.*)$/u;
+const decodeReadyState = Schema.decodeUnknownOption(
+  Schema.fromJsonString(Schema.Struct({ readyState: Schema.String })),
+);
+
+/** `vercel inspect --json`. Undefined for output that names no state this build knows. */
+export function parseDeploymentState(stdout: string): DeploymentState | undefined {
+  const deployment = Option.getOrUndefined(decodeReadyState(stdout));
+  return deployment === undefined ? undefined : STATES[deployment.readyState];
+}
+
+export interface VercelLogLines {
+  /** Oldest first. */
+  readonly lines: ReadonlyArray<DeploymentLogLine>;
+  /** Some lines were left out to keep the page small. */
+  readonly truncated: boolean;
+}
+
 // A failed build explains itself at the end, so the newest lines are the ones kept.
 const MAX_BUILD_LOG_LINES = 1_500;
 const MAX_LOG_TEXT_LENGTH = 2_000;
 
-/**
- * `vercel inspect --logs`, which prints to stderr: a banner, one timestamped line per log line,
- * then the deployment's status. `cutShort` output lost its end, so its last line is a fragment.
- */
-export function parseBuildLogs(stderr: string, cutShort: boolean): DeploymentLogPage {
+const RawBuildEvent = Schema.Struct({
+  created: Schema.optional(Schema.Number),
+  text: Schema.optional(Schema.String),
+  level: Schema.optional(Schema.NullOr(Schema.String)),
+});
+const decodeBuildEvent = Schema.decodeUnknownOption(RawBuildEvent);
+const decodeBuildEvents = Schema.decodeUnknownOption(
+  Schema.fromJsonString(Schema.Array(Schema.Unknown)),
+);
+
+function logText(text: string): string {
+  return NodeUtil.stripVTControlCharacters(text).slice(0, MAX_LOG_TEXT_LENGTH);
+}
+
+function logLevel(level: string | null | undefined): DeploymentLogLine["level"] {
+  if (level === "error" || level === "fatal") return "error";
+  if (level === "warning" || level === "warn") return "warning";
+  return undefined;
+}
+
+/** `vercel inspect --logs --json`: every build event so far, oldest first. Null when unreadable. */
+export function parseBuildLogs(stdout: string): VercelLogLines | null {
+  const events = Option.getOrUndefined(decodeBuildEvents(stdout));
+  if (events === undefined) return null;
   const lines: DeploymentLogLine[] = [];
-  const rows = NodeUtil.stripVTControlCharacters(stderr).split(/\r?\n/u);
-  for (const row of cutShort ? rows.slice(0, -1) : rows) {
-    const match = BUILD_LOG_LINE.exec(row);
-    if (match !== null) {
-      lines.push({ at: match[1]!, text: match[2]!.slice(0, MAX_LOG_TEXT_LENGTH) });
-    }
-    // Before the first timestamp is the CLI's own banner; after it, a line that wrapped or the
-    // CLI's closing `status` row.
-    else if (lines.length > 0 && row.trim().length > 0 && !row.startsWith("status\t")) {
-      lines.push({ text: row.slice(0, MAX_LOG_TEXT_LENGTH) });
-    }
+  for (const raw of events) {
+    const event = Option.getOrUndefined(decodeBuildEvent(raw));
+    if (event?.text === undefined) continue;
+    lines.push({
+      at: event.created === undefined ? undefined : isoTime(event.created),
+      level: logLevel(event.level),
+      text: logText(event.text),
+    });
   }
   return {
     lines: lines.slice(-MAX_BUILD_LOG_LINES),
-    truncated: cutShort || lines.length > MAX_BUILD_LOG_LINES,
+    truncated: lines.length > MAX_BUILD_LOG_LINES,
   };
 }
 
@@ -205,31 +255,30 @@ const RawRuntimeRecord = Schema.Union([
 ]);
 const decodeRuntimeRecord = Schema.decodeUnknownOption(RawRuntimeRecord);
 
-function runtimeLevel(level: string | undefined): NonNullable<DeploymentLogLine["level"]> {
-  if (level === "error" || level === "fatal") return "error";
-  if (level === "warning" || level === "warn") return "warning";
-  return "info";
-}
-
-/** `vercel logs --json`: JSON Lines, newest first, ending with a summary. */
-export function parseRuntimeLogs(stdout: string, cutShort: boolean): DeploymentLogPage {
+/**
+ * `vercel logs --json`: JSON Lines, newest first, ending with a summary. `cutShort` output lost
+ * its end, which is its oldest records and the summary.
+ */
+export function parseRuntimeLogs(
+  stdout: string,
+  cutShort: boolean,
+): VercelLogLines & { readonly nextCursor: string | null } {
   const lines: DeploymentLogLine[] = [];
-  let next: string | undefined;
+  let nextCursor: string | null = null;
   for (const row of stdout.split(/\r?\n/u)) {
     if (row.trim().length === 0) continue;
     const record = decodeJson(row).pipe(Option.flatMap(decodeRuntimeRecord), Option.getOrUndefined);
     if (record === undefined) continue;
     if (record.type === "summary") {
-      if (record.pagination?.hasMore === true) next = record.pagination.next ?? undefined;
+      if (record.pagination?.hasMore === true) nextCursor = record.pagination.next ?? null;
       continue;
     }
-    const at = nonEmpty(record.data.timestamp);
     lines.push({
-      ...(at === undefined ? {} : { at }),
-      level: runtimeLevel(record.data.level),
-      text: (record.data.message ?? "").slice(0, MAX_LOG_TEXT_LENGTH),
+      at: nonEmpty(record.data.timestamp),
+      level: logLevel(record.data.level),
+      text: logText(record.data.message ?? ""),
     });
   }
   lines.reverse();
-  return { lines, truncated: cutShort, ...(next === undefined ? {} : { next }) };
+  return { lines, truncated: cutShort, nextCursor };
 }

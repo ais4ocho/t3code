@@ -54,8 +54,8 @@ import { speechHttpApiLayer } from "./speech/http.ts";
 import { speechStreamRouteLayer } from "./speech/stream.ts";
 import * as PullRequestProviderRegistry from "./pullRequest/PullRequestProviderRegistry.ts";
 import * as PullRequestService from "./pullRequest/PullRequestService.ts";
-import * as DeploymentService from "./deployments/DeploymentService.ts";
-import * as ServerDeploymentHost from "./deployments/ServerDeploymentHost.ts";
+import * as DeploymentProviderRegistry from "./deployment/DeploymentProviderRegistry.ts";
+import * as DeploymentService from "./deployment/DeploymentService.ts";
 import * as IssueService from "./issue/IssueService.ts";
 import * as IssueTrackerConnections from "./issue/IssueTrackerConnections.ts";
 import * as IssueTrackerBindings from "./persistence/IssueTrackerBindings.ts";
@@ -453,6 +453,11 @@ const layerIssueService = Layer.merge(IssueService.layer, IssueTrackerConnection
 
 // One instance serves MCP link calls and refreshes snapshots on thread events.
 const layerThreadIssueService = ThreadIssueService.layer;
+
+const layerDeploymentService = DeploymentService.layer.pipe(
+  Layer.provide(DeploymentProviderRegistry.layer.pipe(Layer.provide(ProcessRunner.layer))),
+  Layer.provide(RuntimeLayer.layerProjectService),
+);
 
 const layerGitManager = GitManager.layer.pipe(
   Layer.provide(Layer.merge(ProjectionStoreV2.layer, ProjectStore.layer)),
@@ -878,12 +883,7 @@ const layerMakeRoutes = Layer.mergeAll(
   Layer.provide(PeerLinkRequests.layer),
   // Share the service so HTTP/WS clients single-flight reads and invalidate each other's cached patches.
   Layer.provide(layerPullRequestService),
-  Layer.provide(
-    DeploymentService.layer.pipe(
-      Layer.provide(ServerDeploymentHost.layer.pipe(Layer.provide(ProcessRunner.layer))),
-      Layer.provide(RuntimeLayer.layerProjectService),
-    ),
-  ),
+  Layer.provide(layerDeploymentService),
   Layer.provide(layerThreadIssueService),
   Layer.provide(layerIssueService),
   // The same activity instance RunExecutionService reports to, by layer memoization.

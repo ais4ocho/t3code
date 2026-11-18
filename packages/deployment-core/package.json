@@ -3,9 +3,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./server/driver": {
-      "types": "./src/server/driver.ts",
-      "import": "./src/server/driver.ts"
+    "./server/DeploymentHost": {
+      "types": "./src/server/DeploymentHost.ts",
+      "import": "./src/server/DeploymentHost.ts"
+    },
+    "./server/DeploymentProvider": {
+      "types": "./src/server/DeploymentProvider.ts",
+      "import": "./src/server/DeploymentProvider.ts"
     }
   },
   "scripts": {

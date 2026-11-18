@@ -1,0 +1,102 @@
+[
+  {
+    "created": 1794598712269,
+    "date": 1794598712269,
+    "deploymentId": "dpl_1",
+    "id": "17945987122690001",
+    "text": "Running build in Washington, D.C., USA (East) – iad1",
+    "type": "stdout",
+    "serial": "17945987122690001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  },
+  {
+    "created": 1794598713199,
+    "date": 1794598713199,
+    "deploymentId": "dpl_1",
+    "id": "17945987131990001",
+    "text": "Cloning completed: 930.000ms",
+    "type": "stdout",
+    "serial": "17945987131990001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  },
+  {
+    "created": 1794598714461,
+    "date": 1794598714461,
+    "deploymentId": "dpl_1",
+    "id": "17945987144610001",
+    "text": "Running \"vercel build\"",
+    "type": "stdout",
+    "serial": "17945987144610001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  },
+  {
+    "created": 1794598720100,
+    "date": 1794598720100,
+    "deploymentId": "dpl_1",
+    "id": "17945987201000001",
+    "text": "npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported",
+    "type": "stderr",
+    "level": "warning",
+    "serial": "17945987201000001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  },
+  {
+    "created": 1794598721000,
+    "date": 1794598721000,
+    "deploymentId": "dpl_1",
+    "id": "17945987210000001",
+    "type": "delimiter",
+    "serial": "17945987210000001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  },
+  {
+    "created": 1794598760000,
+    "date": 1794598760000,
+    "deploymentId": "dpl_1",
+    "id": "17945987600000001",
+    "text": "\u001b[31mType error\u001b[39m: Property 'total' does not exist on type 'Cart'.",
+    "type": "stderr",
+    "level": "error",
+    "serial": "17945987600000001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  },
+  {
+    "created": 1794598760500,
+    "date": 1794598760500,
+    "deploymentId": "dpl_1",
+    "id": "17945987605000001",
+    "text": "Error: Command \"npm run build\" exited with 1",
+    "type": "stderr",
+    "level": "error",
+    "serial": "17945987605000001",
+    "info": {
+      "type": "build",
+      "name": "bld_1",
+      "entrypoint": "."
+    }
+  }
+]

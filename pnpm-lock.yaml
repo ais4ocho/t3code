@@ -868,6 +868,12 @@ importers:
       '@napi-rs/keyring':
         specifier: ^1.3.0
         version: 1.3.0
+      '@t3tools/deployment-core':
+        specifier: workspace:*
+        version: link:../../packages/deployment-core
+      '@t3tools/deployment-vercel':
+        specifier: workspace:*
+        version: link:../../packages/deployment-vercel
       '@t3tools/issue-tracker-linear':
         specifier: workspace:*
         version: link:../../packages/issue-tracker-linear
@@ -989,12 +995,6 @@ importers:
       '@t3tools/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@t3tools/deployment-core':
-        specifier: workspace:*
-        version: link:../../packages/deployment-core
-      '@t3tools/deployment-vercel':
-        specifier: workspace:*
-        version: link:../../packages/deployment-vercel
       '@t3tools/provider-testing':
         specifier: workspace:*
         version: link:../../packages/provider-testing
