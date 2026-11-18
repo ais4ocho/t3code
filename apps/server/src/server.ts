@@ -54,6 +54,8 @@ import { speechHttpApiLayer } from "./speech/http.ts";
 import { speechStreamRouteLayer } from "./speech/stream.ts";
 import * as PullRequestProviderRegistry from "./pullRequest/PullRequestProviderRegistry.ts";
 import * as PullRequestService from "./pullRequest/PullRequestService.ts";
+import * as DeploymentService from "./deployments/DeploymentService.ts";
+import * as ServerDeploymentHost from "./deployments/ServerDeploymentHost.ts";
 import * as SqlitePersistence from "./persistence/Sqlite.ts";
 import * as PullRequestFilesViewed from "./persistence/PullRequestFilesViewed.ts";
 import * as PullRequestReviewGuides from "./persistence/PullRequestReviewGuides.ts";
@@ -865,6 +867,12 @@ const layerMakeRoutes = Layer.mergeAll(
   Layer.provide(PeerLinkRequests.layer),
   // Share the service so HTTP/WS clients single-flight reads and invalidate each other's cached patches.
   Layer.provide(layerPullRequestService),
+  Layer.provide(
+    DeploymentService.layer.pipe(
+      Layer.provide(ServerDeploymentHost.layer.pipe(Layer.provide(ProcessRunner.layer))),
+      Layer.provide(RuntimeLayer.layerProjectService),
+    ),
+  ),
   // The same activity instance RunExecutionService reports to, by layer memoization.
   Layer.provide(
     ServerBrowser.layer.pipe(

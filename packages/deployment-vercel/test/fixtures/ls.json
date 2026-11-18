@@ -1,0 +1,124 @@
+{
+  "contextName": "acme",
+  "deployments": [
+    {
+      "url": "storefront-re2dxyute-acme.vercel.app",
+      "name": "storefront",
+      "state": "READY",
+      "target": "production",
+      "createdAt": 1794598711566,
+      "buildingAt": 1794598712591,
+      "ready": 1794598799535,
+      "creator": {
+        "uid": "uid_0",
+        "username": "octocat"
+      },
+      "meta": {
+        "githubCommitAuthorName": "Octo Cat",
+        "githubCommitAuthorEmail": "dev@example.com",
+        "githubCommitMessage": "Merge pull request #7 from acme/checkout\n\nAdd the checkout page",
+        "githubCommitOrg": "acme",
+        "githubCommitRef": "main",
+        "githubCommitRepo": "storefront",
+        "githubCommitSha": "0000000000000000000000000000000000000001",
+        "githubDeployment": "1",
+        "githubOrg": "acme",
+        "githubRepo": "storefront",
+        "githubRepoOwnerType": "Organization",
+        "githubCommitRepoId": "1",
+        "githubRepoId": "1",
+        "githubRepoVisibility": "private",
+        "githubHost": "github.com",
+        "githubCommitAuthorLogin": "octocat",
+        "githubCommitVerification": "verified",
+        "repoPushedAt": "1794598708000",
+        "branchAlias": "storefront-git-main-acme.vercel.app",
+        "lambdaRuntimeStats": "{\"nodejs\":5}",
+        "bundler": "turbopack"
+      }
+    },
+    {
+      "url": "storefront-jlik23lxu-acme.vercel.app",
+      "name": "storefront",
+      "state": "BUILDING",
+      "target": null,
+      "createdAt": 1794598639512,
+      "buildingAt": 1794598640613,
+      "creator": {
+        "uid": "uid_1",
+        "username": "octocat"
+      },
+      "meta": {
+        "githubCommitAuthorName": "Octo Cat",
+        "githubCommitAuthorEmail": "dev@example.com",
+        "githubCommitMessage": "Fix the cart total\n\nLonger body.",
+        "githubCommitOrg": "acme",
+        "githubCommitRef": "checkout",
+        "githubCommitRepo": "storefront",
+        "githubCommitSha": "0000000000000000000000000000000000000002",
+        "githubDeployment": "1",
+        "githubOrg": "acme",
+        "githubRepo": "storefront",
+        "githubRepoOwnerType": "Organization",
+        "githubCommitRepoId": "1",
+        "githubRepoId": "1",
+        "githubRepoVisibility": "private",
+        "githubHost": "github.com",
+        "githubCommitAuthorLogin": "octocat",
+        "githubCommitVerification": "unverified",
+        "repoPushedAt": "1794598637000",
+        "branchAlias": "storefront-git-checkout-acme.vercel.app",
+        "githubPrId": "42",
+        "lambdaRuntimeStats": "{\"nodejs\":5}",
+        "bundler": "turbopack"
+      }
+    },
+    {
+      "url": "storefront-1mv84eynf-acme.vercel.app",
+      "name": "storefront",
+      "state": "READY",
+      "target": "production",
+      "createdAt": 1792445892255,
+      "buildingAt": 1792445893194,
+      "ready": 1792445927872,
+      "creator": {
+        "uid": "uid_2",
+        "username": "octocat"
+      },
+      "meta": {
+        "githubCommitAuthorName": "Octo Cat",
+        "githubCommitAuthorEmail": "dev@example.com",
+        "githubCommitMessage": "Merge pull request #7 from acme/checkout\n\nAdd the checkout page",
+        "githubCommitOrg": "acme",
+        "githubCommitRef": "main",
+        "githubCommitRepo": "storefront",
+        "githubCommitSha": "0000000000000000000000000000000000000003",
+        "githubDeployment": "1",
+        "githubOrg": "acme",
+        "githubRepo": "storefront",
+        "githubRepoOwnerType": "Organization",
+        "githubCommitRepoId": "1",
+        "githubRepoId": "1",
+        "githubRepoVisibility": "private",
+        "githubHost": "github.com",
+        "githubCommitAuthorLogin": "octocat",
+        "githubCommitVerification": "verified",
+        "repoPushedAt": "1792445888000",
+        "branchAlias": "storefront-git-main-acme.vercel.app",
+        "lambdaRuntimeStats": "{\"nodejs\":5}",
+        "bundler": "turbopack"
+      }
+    },
+    {
+      "url": "storefront-gone-acme.vercel.app",
+      "name": "storefront",
+      "state": "DELETED",
+      "createdAt": 1794000000000
+    }
+  ],
+  "pagination": {
+    "count": 4,
+    "next": null,
+    "prev": null
+  }
+}

@@ -1,0 +1,10 @@
+<claude-code-hint v="1" type="plugin" value="vercel@claude-plugins-official" />
+Vercel CLI 64.0.2
+Fetching deployment "storefront-re2dxyute-acme.vercel.app" in acme
+2026-11-13T19:38:32.269Z  Running build in Washington, D.C., USA (East) – iad1
+2026-11-13T19:38:32.270Z  Build machine configuration: 4 cores, 8 GB (Standard Build Machine)
+2026-11-13T19:38:32.374Z  Cloning github.com/acme/storefront (Branch: main, Commit: 065cbef)
+2026-11-13T19:38:33.199Z  Cloning completed: 825.000ms
+2026-11-13T19:38:34.186Z  Skipping build cache since Node.js version changed from "24.x" to "26.x"
+2026-11-13T19:38:34.461Z  Running "vercel build"
+status	● Ready

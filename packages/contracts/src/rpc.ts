@@ -412,6 +412,14 @@ import {
   SourceControlSignInResult,
 } from "./sourceControl.ts";
 import { VcsError } from "./vcs.ts";
+import {
+  DeploymentDiscoveryResult,
+  DeploymentError,
+  DeploymentListInput,
+  DeploymentListResult,
+  DeploymentLogPage,
+  DeploymentLogsInput,
+} from "./deployment.ts";
 import { Project, ProjectMutation, ProjectMutationError } from "./project.ts";
 
 export const WS_METHODS = {
@@ -611,6 +619,9 @@ export const WS_METHODS = {
   sourceControlAppAccess: "sourceControl.appAccess",
   sourceControlStarred: "sourceControl.starred",
   sourceControlStar: "sourceControl.star",
+  deploymentsDiscover: "deployments.discover",
+  deploymentsList: "deployments.list",
+  deploymentsLogs: "deployments.logs",
   projectCloneStart: "projectClone.start",
   projectCloneCancel: "projectClone.cancel",
   projectCloneRetry: "projectClone.retry",
@@ -1334,6 +1345,24 @@ const WsSourceControlStarRpc = Rpc.make(WS_METHODS.sourceControlStar, {
   payload: SourceControlStarredInput,
   success: Schema.Boolean,
   error: EnvironmentAuthorizationError,
+});
+
+const WsDeploymentsDiscoverRpc = Rpc.make(WS_METHODS.deploymentsDiscover, {
+  payload: Schema.Struct({}),
+  success: DeploymentDiscoveryResult,
+  error: EnvironmentAuthorizationError,
+});
+
+const WsDeploymentsListRpc = Rpc.make(WS_METHODS.deploymentsList, {
+  payload: DeploymentListInput,
+  success: DeploymentListResult,
+  error: Schema.Union([DeploymentError, EnvironmentAuthorizationError]),
+});
+
+const WsDeploymentsLogsRpc = Rpc.make(WS_METHODS.deploymentsLogs, {
+  payload: DeploymentLogsInput,
+  success: DeploymentLogPage,
+  error: Schema.Union([DeploymentError, EnvironmentAuthorizationError]),
 });
 
 // Returns when the project exists and cloning starts; progress uses the subscription.
@@ -2228,6 +2257,9 @@ export const WsRpcGroup = RpcGroup.make(
   WsSourceControlAppAccessRpc,
   WsSourceControlStarredRpc,
   WsSourceControlStarRpc,
+  WsDeploymentsDiscoverRpc,
+  WsDeploymentsListRpc,
+  WsDeploymentsLogsRpc,
   WsProjectCloneStartRpc,
   WsProjectCloneCancelRpc,
   WsProjectCloneRetryRpc,
