@@ -118,8 +118,10 @@ const makeEnvironmentQueryHarness = Effect.fn("TestEnvironmentQuery.makeHarness"
     rpcSession,
     isFinal,
     onAnswer,
+    refreshIntervalMs,
   }: {
     readonly refreshTrigger?: Atom.Atom<unknown>;
+    readonly refreshIntervalMs?: (value: Option.Option<A>) => number;
     readonly onAnswer?: QueryAnswerHandler<undefined, A>;
     readonly isFinal?: (value: A) => boolean;
     readonly idleTtlMs?: number;
@@ -170,6 +172,7 @@ const makeEnvironmentQueryHarness = Effect.fn("TestEnvironmentQuery.makeHarness"
     ...(idleTtlMs === undefined ? {} : { idleTtlMs }),
     ...(isFinal === undefined ? {} : { isFinal }),
     ...(onAnswer === undefined ? {} : { onAnswer }),
+    ...(refreshIntervalMs === undefined ? {} : { refreshIntervalMs }),
   });
 
   return {
@@ -1237,6 +1240,32 @@ describe("environment query lifecycle", () => {
       expect(executions).toBe(2);
 
       expect(yield* read).toBe(3);
+    }),
+  );
+
+  it.effect("re-reads after the wait its latest value asks for", () =>
+    Effect.gen(function* () {
+      vi.useFakeTimers();
+      yield* Effect.addFinalizer(() => Effect.sync(() => vi.useRealTimers()));
+      let reads = 0;
+      const harness = yield* makeEnvironmentQueryHarness(
+        Effect.sync(() => (reads += 1)),
+        { refreshIntervalMs: (value) => (Option.contains(value, 1) ? 1_000 : 60_000) },
+      );
+      const registry = AtomRegistry.make();
+      yield* Effect.addFinalizer(() => Effect.sync(() => registry.dispose()));
+      const unmount = registry.mount(harness.atom);
+      yield* Effect.addFinalizer(() => Effect.sync(unmount));
+      yield* AtomRegistry.getResult(registry, harness.atom);
+      expect(reads).toBe(1);
+
+      yield* Effect.promise(() => vi.advanceTimersByTimeAsync(1_000));
+      expect(reads).toBe(2);
+
+      yield* Effect.promise(() => vi.advanceTimersByTimeAsync(59_000));
+      expect(reads).toBe(2);
+      yield* Effect.promise(() => vi.advanceTimersByTimeAsync(1_000));
+      expect(reads).toBe(3);
     }),
   );
 

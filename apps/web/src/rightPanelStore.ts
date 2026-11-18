@@ -3,7 +3,14 @@ import {
   scopedThreadKey,
   scopeThreadRef,
 } from "@t3tools/client-runtime/environment";
-import { EnvironmentId, RunId, ThreadId, type ScopedThreadRef } from "@t3tools/contracts";
+import {
+  DeploymentHostname,
+  EnvironmentId,
+  RunId,
+  ThreadId,
+  type ScopedThreadRef,
+} from "@t3tools/contracts";
+import * as Schema from "effect/Schema";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -22,6 +29,7 @@ const RIGHT_PANEL_KINDS = [
   "pull-request",
   "pull-requests",
   "issue",
+  "deployment",
   "side-chat",
 ] as const;
 export type RightPanelKind = (typeof RIGHT_PANEL_KINDS)[number];
@@ -94,10 +102,20 @@ export type RightPanelSurface =
       key: string;
       url?: string;
     }
+  /** A deployment's hostname is its identity, so it is the whole of the id. */
+  | {
+      id: `deployment:${string}`;
+      kind: "deployment";
+      environmentId?: string;
+      projectId: string;
+      hostname: string;
+      /** The branch filter of the list it was opened from, so the panel reads that same list. */
+      branch?: string;
+    }
   | { id: `side-chat:${string}`; kind: "side-chat"; threadId: ThreadId };
 
 const RIGHT_PANEL_STORAGE_KEY = "t3code:right-panel-state:v2";
-const RIGHT_PANEL_STORAGE_VERSION = 15;
+const RIGHT_PANEL_STORAGE_VERSION = 16;
 
 export const PULL_REQUESTS_PANEL_REF = scopeThreadRef(
   EnvironmentId.make("pull-requests-panel"),
@@ -110,12 +128,20 @@ export const ISSUES_PANEL_REF = scopeThreadRef(
   ThreadId.make("issues-panel"),
 );
 
+/** The deployments page's shared panel, with the same fixed sentinel ref as the issues list. */
+export const DEPLOYMENTS_PANEL_REF = scopeThreadRef(
+  EnvironmentId.make("deployments-panel"),
+  ThreadId.make("deployments-panel"),
+);
+
 /**
- * The pull-request and issues lists' shared panels are session
+ * The pull-request, issues and deployments lists' shared panels are session
  * state: reopening the app should show the list, not last session's tabs and detail fetches.
  */
 const isPullRequestsPanelKey = (threadKey: string) =>
-  threadKey.endsWith(":pull-requests-panel") || threadKey.endsWith(":issues-panel");
+  threadKey.endsWith(":pull-requests-panel") ||
+  threadKey.endsWith(":issues-panel") ||
+  threadKey.endsWith(":deployments-panel");
 
 export interface ThreadRightPanelState {
   isOpen: boolean;
@@ -152,7 +178,10 @@ interface RightPanelStoreState {
   ) => boolean;
   open: (
     ref: ScopedThreadRef,
-    kind: Exclude<RightPanelKind, "file" | "terminal" | "pull-request" | "issue" | "side-chat">,
+    kind: Exclude<
+      RightPanelKind,
+      "file" | "terminal" | "pull-request" | "issue" | "deployment" | "side-chat"
+    >,
   ) => void;
   openSideChat: (ref: ScopedThreadRef, threadId: ThreadId) => void;
   openDevice: (ref: ScopedThreadRef, target: DeviceTabTarget, automatic?: boolean) => void;
@@ -183,6 +212,7 @@ interface RightPanelStoreState {
     },
   ) => void;
   openIssue: (ref: ScopedThreadRef, target: IssueSurfaceTarget) => void;
+  openDeployment: (ref: ScopedThreadRef, target: DeploymentSurfaceTarget) => void;
   setPullRequestDetailTab: (
     ref: ScopedThreadRef,
     surfaceId: string,
@@ -219,7 +249,10 @@ interface RightPanelStoreState {
   toggleVisibility: (ref: ScopedThreadRef) => void;
   toggle: (
     ref: ScopedThreadRef,
-    kind: Exclude<RightPanelKind, "file" | "terminal" | "pull-request" | "issue" | "side-chat">,
+    kind: Exclude<
+      RightPanelKind,
+      "file" | "terminal" | "pull-request" | "issue" | "deployment" | "side-chat"
+    >,
   ) => void;
   setThreadPanelOpen: (
     ref: ScopedThreadRef,
@@ -244,7 +277,7 @@ const DEFAULT_THREAD_PANEL_VISIBILITY: ThreadPanelVisibility = {
 const singletonSurface = (
   kind: Exclude<
     RightPanelKind,
-    "file" | "preview" | "terminal" | "pull-request" | "issue" | "side-chat"
+    "file" | "preview" | "terminal" | "pull-request" | "issue" | "deployment" | "side-chat"
   >,
 ): RightPanelSurface => {
   switch (kind) {
@@ -338,6 +371,32 @@ function issueSurface(target: IssueSurfaceTarget): IssueSurface {
     scope: target.scope,
     key: target.key,
     ...(typeof target.url === "string" ? { url: target.url } : {}),
+  };
+}
+
+export type DeploymentSurface = Extract<RightPanelSurface, { kind: "deployment" }>;
+
+export interface DeploymentSurfaceTarget {
+  environmentId?: string;
+  projectId: string;
+  hostname: string;
+  branch?: string;
+}
+
+const isDeploymentHostname = Schema.is(DeploymentHostname);
+
+function deploymentSurfaceId(hostname: string): DeploymentSurface["id"] {
+  return `deployment:${hostname}`;
+}
+
+function deploymentSurface(target: DeploymentSurfaceTarget): DeploymentSurface {
+  return {
+    id: deploymentSurfaceId(target.hostname),
+    kind: "deployment",
+    ...(target.environmentId === undefined ? {} : { environmentId: target.environmentId }),
+    projectId: target.projectId,
+    hostname: target.hostname,
+    ...(typeof target.branch === "string" ? { branch: target.branch } : {}),
   };
 }
 
@@ -624,6 +683,21 @@ export function migratePersistedRightPanelState(persistedState: unknown): {
                         }),
                       ];
                     }
+                    if (surface.kind === "deployment") {
+                      if (
+                        typeof surface.projectId !== "string" ||
+                        !isDeploymentHostname(surface.hostname)
+                      ) {
+                        return [];
+                      }
+                      const { environmentId, ...rest } = surface;
+                      return [
+                        deploymentSurface({
+                          ...rest,
+                          ...(typeof environmentId === "string" ? { environmentId } : {}),
+                        }),
+                      ];
+                    }
                     if (surface.kind !== "terminal") return [surface];
                     if (
                       !("resourceId" in surface) ||
@@ -872,6 +946,18 @@ export const useRightPanelStore = create<RightPanelStoreState>()(
                   ),
                 }
               : next;
+          }),
+        ),
+      openDeployment: (ref, target) =>
+        set((state) =>
+          userAction(state, scopedThreadKey(ref), (current) => {
+            const surface = deploymentSurface(target);
+            const next = upsertSurface(current, surface);
+            // Reopened from another list, the tab follows it, so the panel reads what that list read.
+            return {
+              ...next,
+              surfaces: next.surfaces.map((entry) => (entry.id === surface.id ? surface : entry)),
+            };
           }),
         ),
       setPullRequestDetailTab: (ref, surfaceId, detailTab) =>

@@ -43,6 +43,7 @@ import { cn } from "../lib/utils";
 import { THREAD_DETAILS_PANEL_ICON_CLASS } from "./chat/threadDetailsPanelStyles";
 import { ThreadDetailsThreadPrRows } from "./chat/ThreadDetailsPrRows";
 import { ThreadDetailsIssueRows } from "./chat/ThreadDetailsIssueRows";
+import { ThreadDetailsDeploymentRow } from "./chat/ThreadDetailsDeploymentRow";
 import { parsePullRequestReference } from "@t3tools/client-runtime/pull-request-link-input";
 import { getSourceControlPresentation } from "../sourceControlPresentation";
 import { useComposerMenuProps } from "./chat/composerEventScope";
@@ -900,6 +901,13 @@ export function BranchToolbarBranchSelector({
                 url: link.url,
               });
             }}
+          />
+        ) : null}
+        {displayMode === "panel" ? (
+          <ThreadDetailsDeploymentRow
+            threadRef={threadRef}
+            projectId={activeProject?.id ?? null}
+            branch={branchPrBranch}
           />
         ) : null}
       </div>

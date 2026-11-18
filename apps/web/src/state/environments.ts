@@ -117,6 +117,10 @@ export function useIssuesSupported() {
   return useAtomValue(environmentSummaries.issuesSupportedAtom);
 }
 
+export function useDeploymentsSupported() {
+  return useAtomValue(environmentSummaries.deploymentsSupportedAtom);
+}
+
 export function useEnvironmentMachines() {
   return useAtomValue(environmentSummaries.machineByIdAtom);
 }

@@ -65,6 +65,7 @@ export function PullRequestDetailTitleRow({ className, ...props }: ComponentProp
 export function PullRequestDetailTabBar<Tab extends string>({
   tabs,
   value,
+  label = "Pull request tabs",
   onValueChange,
   onTabIntent,
   inert,
@@ -72,6 +73,7 @@ export function PullRequestDetailTabBar<Tab extends string>({
 }: {
   tabs: ReadonlyArray<{ readonly value: Tab; readonly label: string }>;
   value: Tab;
+  label?: string;
   onValueChange?: (tab: Tab) => void;
   onTabIntent?: (tab: Tab) => void;
   inert?: boolean;
@@ -84,7 +86,7 @@ export function PullRequestDetailTabBar<Tab extends string>({
   return (
     <nav
       className="col-span-2 flex min-w-0 flex-wrap items-center gap-2 border-t border-border/60 px-4 py-2"
-      aria-label="Pull request tabs"
+      aria-label={label}
       inert={inert}
     >
       <ToggleGroup

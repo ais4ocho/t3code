@@ -1,6 +1,7 @@
 import { scopedThreadKey } from "@t3tools/client-runtime/environment";
 import {
   ChatFileAttachment,
+  DeploymentHostname,
   INCOGNITO_BROWSER_PROFILE_ID,
   PreviewSessionSnapshot,
   ScopedThreadRef,
@@ -51,6 +52,7 @@ const isPersistentView = (entry: ClosedViewEntry) =>
 const isThreadRef = Schema.is(ScopedThreadRef);
 const isSnapshot = Schema.is(PreviewSessionSnapshot);
 const isAttachment = Schema.is(ChatFileAttachment);
+const isDeploymentHostname = Schema.is(DeploymentHostname);
 
 const isClosedViewEntry = (entry: unknown): entry is ClosedViewEntry => {
   const view = entry as ClosedViewEntry | null;
@@ -104,6 +106,13 @@ const isClosedViewEntry = (entry: unknown): entry is ClosedViewEntry => {
         (surface.environmentId === undefined || typeof surface.environmentId === "string") &&
         (surface.host === undefined || typeof surface.host === "string") &&
         (surface.url === undefined || typeof surface.url === "string")
+      );
+    case "deployment":
+      return (
+        typeof surface.projectId === "string" &&
+        isDeploymentHostname(surface.hostname) &&
+        (surface.environmentId === undefined || typeof surface.environmentId === "string") &&
+        (surface.branch === undefined || typeof surface.branch === "string")
       );
     default:
       return false;

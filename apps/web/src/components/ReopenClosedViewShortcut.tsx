@@ -23,6 +23,7 @@ import {
   reopenClosedView,
 } from "../reopenClosedView";
 import {
+  DEPLOYMENTS_PANEL_REF,
   ISSUES_PANEL_REF,
   PULL_REQUESTS_PANEL_REF,
   selectActiveRightPanel,
@@ -62,6 +63,8 @@ const isGlobalPullRequests = (ref: ScopedThreadRef) =>
   scopedThreadKey(ref) === scopedThreadKey(PULL_REQUESTS_PANEL_REF);
 const isGlobalIssues = (ref: ScopedThreadRef) =>
   scopedThreadKey(ref) === scopedThreadKey(ISSUES_PANEL_REF);
+const isGlobalDeployments = (ref: ScopedThreadRef) =>
+  scopedThreadKey(ref) === scopedThreadKey(DEPLOYMENTS_PANEL_REF);
 
 export function ReopenClosedViewShortcut() {
   const navigate = useNavigate();
@@ -95,7 +98,7 @@ export function ReopenClosedViewShortcut() {
     const { drop, restore } = planNextReopen(useClosedViewStore.getState().entries, (entry) => {
       const ref = entry.threadRef;
       const panel = selectThreadRightPanelState(panelsByThread, ref);
-      if (isGlobalPullRequests(ref) || isGlobalIssues(ref)) {
+      if (isGlobalPullRequests(ref) || isGlobalIssues(ref) || isGlobalDeployments(ref)) {
         return {
           environmentKnown: true,
           catalogReady: true,
@@ -124,7 +127,9 @@ export function ReopenClosedViewShortcut() {
     const ref = restore.threadRef;
     const globalPullRequests = isGlobalPullRequests(ref);
     const globalIssues = isGlobalIssues(ref);
-    const thread = globalPullRequests || globalIssues ? null : readThreadShell(ref);
+    const globalDeployments = isGlobalDeployments(ref);
+    const thread =
+      globalPullRequests || globalIssues || globalDeployments ? null : readThreadShell(ref);
     const owner = thread ?? drafts.getDraftThreadByRef(ref);
     const project = owner ? readProject(scopeProjectRef(ref.environmentId, owner.projectId)) : null;
     if (!(await reopenClosedView(restore, { openPreview, workspaceAvailable: project !== null }))) {
@@ -143,6 +148,8 @@ export function ReopenClosedViewShortcut() {
       });
     } else if (globalIssues) {
       await navigate({ to: "/issues", search: readIssueListPreferences() });
+    } else if (globalDeployments) {
+      await navigate({ to: "/deployments" });
     } else {
       const draftId = thread === null ? drafts.getDraftIdByRef(ref) : null;
       if (draftId !== null)

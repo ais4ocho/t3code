@@ -96,7 +96,8 @@ interface EnvironmentQueryAtomOptions<Input, A, E, R> extends Omit<
   readonly persistence?: QueryPersistence<A>;
   readonly staleTimeMs?: number;
   readonly idleTtlMs?: number;
-  readonly refreshIntervalMs?: number;
+  /** A function reads the wait off the latest value, for data that moves faster in some states. */
+  readonly refreshIntervalMs?: number | ((value: Option.Option<A>) => number);
   readonly refreshTrigger?: (target: {
     readonly environmentId: EnvironmentIdType;
     readonly input: Input;
@@ -543,7 +544,7 @@ const refreshOnSignalWhileRead =
   };
 
 const refreshEveryUntilFinal =
-  <V>(intervalMs: number, isFinal: (value: V) => boolean) =>
+  <V>(intervalMs: (value: V) => number, isFinal: (value: V) => boolean) =>
   <A extends V>(self: Atom.Atom<A>): Atom.Atom<A> =>
     Atom.transform(
       self,
@@ -551,7 +552,7 @@ const refreshEveryUntilFinal =
         const value = get(self);
         if (!isFinal(value)) {
           // @effect-diagnostics-next-line globalTimers:off - Mirrors `Atom.withRefresh`, outside an Effect runtime.
-          const handle = setTimeout(() => get.refresh(self), intervalMs);
+          const handle = setTimeout(() => get.refresh(self), intervalMs(value));
           get.addFinalizer(() => clearTimeout(handle));
         }
         return value;
@@ -848,10 +849,19 @@ export function createEnvironmentQueryAtomFamily<R, ER, Input, A, E>(
       .pipe(Atom.setIdleTTL(idleTtlMs));
     const isFinal = (result: AsyncResult.AsyncResult<A, unknown>) =>
       options.isFinal !== undefined && Option.exists(AsyncResult.value(result), options.isFinal);
+    const refreshIntervalMs = options.refreshIntervalMs;
     const intervalQuery =
-      options.refreshIntervalMs === undefined
+      refreshIntervalMs === undefined
         ? queryAtom
-        : queryAtom.pipe(refreshEveryUntilFinal(options.refreshIntervalMs, isFinal));
+        : queryAtom.pipe(
+            refreshEveryUntilFinal(
+              typeof refreshIntervalMs === "number"
+                ? () => refreshIntervalMs
+                : (result: AsyncResult.AsyncResult<A, unknown>) =>
+                    refreshIntervalMs(AsyncResult.value(result)),
+              isFinal,
+            ),
+          );
     const refreshTrigger = options.refreshTrigger?.(target);
     const cache = (
       refreshTrigger === undefined
@@ -961,7 +971,9 @@ export function createEnvironmentRpcQueryAtomFamily<
     readonly persistence?: QueryPersistence<EnvironmentRpcSuccess<TTag>>;
     readonly staleTimeMs?: number;
     readonly idleTtlMs?: number;
-    readonly refreshIntervalMs?: number;
+    readonly refreshIntervalMs?:
+      | number
+      | ((value: Option.Option<EnvironmentRpcSuccess<TTag>>) => number);
     readonly refreshTrigger?: (target: {
       readonly environmentId: EnvironmentIdType;
       readonly input: EnvironmentRpcInput<TTag>;

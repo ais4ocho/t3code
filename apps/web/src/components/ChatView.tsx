@@ -3274,6 +3274,7 @@ export default function ChatView(props: ChatViewProps) {
             : undefined,
       }}
       issuesSupported={serverConfig?.environment.capabilities.issues === true}
+      deploymentsSupported={serverConfig?.environment.capabilities.deployments === true}
       files={{
         projectId: activeProject?.id,
         projectName: activeProject?.title ?? null,

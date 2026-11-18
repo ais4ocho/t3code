@@ -66,6 +66,8 @@ import { isElectron } from "~/env";
 import type { DesktopPreviewOverlay } from "~/previewStateStore";
 import type { RightPanelSurface } from "~/rightPanelStore";
 import { cn } from "~/lib/utils";
+import { useDeploymentTabTitle } from "~/components/deployment/DeploymentDetailPanel";
+import { DeploymentGlyph } from "~/components/deployment/deploymentPresentation";
 import { issueStatePresentation } from "~/components/issue/issuePresentation";
 import { issueEnvironment } from "~/state/issues";
 import { resolveShortcutCommand, type ShortcutMatchContext } from "~/keybindings";
@@ -599,6 +601,8 @@ function surfaceTitle(
     case "issue":
       // A git host numbers its issues; a tracker with keys of its own, such as Linear, names them.
       return /^\d+$/.test(surface.key) ? `#${surface.key}` : surface.key;
+    case "deployment":
+      return surface.hostname;
     case "device":
       return surface.title ?? surface.target?.name ?? "Device";
     case "side-chat":
@@ -693,6 +697,8 @@ function SurfaceIcon({
       return <PullRequestGlyph.link className="size-3 shrink-0" />;
     case "issue":
       return <IssueSurfaceIcon surface={surface} environmentId={environmentId} />;
+    case "deployment":
+      return <DeploymentGlyph.deployment className="size-3 shrink-0" />;
     case "side-chat":
       return <SideChatTabIcon environmentId={environmentId} threadId={surface.threadId} />;
     case "device":
@@ -763,6 +769,30 @@ export function resolvePullRequestTabLink(
     }
   }
   return newest;
+}
+
+/** A hostname says little, so a deployment tab is named by its commit once the list knows it. */
+function useDeploymentSurfaceTitle(
+  surface: RightPanelSurface,
+  environmentId: EnvironmentId | null,
+): string | null {
+  const configs = useServerConfigs();
+  const resolvedEnvironmentId =
+    surface.kind === "deployment"
+      ? ((surface.environmentId as EnvironmentId | undefined) ?? environmentId)
+      : null;
+  return useDeploymentTabTitle(
+    surface.kind === "deployment" &&
+      resolvedEnvironmentId !== null &&
+      configs.get(resolvedEnvironmentId)?.environment.capabilities.deployments === true
+      ? {
+          environmentId: resolvedEnvironmentId,
+          projectId: surface.projectId as ProjectId,
+          hostname: surface.hostname,
+          branch: surface.branch,
+        }
+      : null,
+  );
 }
 
 /** The issue's own state mark, from the detail its panel already reads; a plain dot until then. */
@@ -946,7 +976,8 @@ function RightPanelTab(
       ? scopeThreadRef(props.environmentId, surface.threadId)
       : null,
   );
-  const title = sideChatShell?.title ?? props.title;
+  const deploymentTitle = useDeploymentSurfaceTitle(surface, props.environmentId);
+  const title = sideChatShell?.title ?? deploymentTitle ?? props.title;
   const sideChatState = sideChatTabState(sideChatShell);
   const content = (
     <>

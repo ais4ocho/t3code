@@ -283,6 +283,10 @@
       "types": "./src/state/providerInstanceDisplay.ts",
       "default": "./src/state/providerInstanceDisplay.ts"
     },
+    "./state/deployments": {
+      "types": "./src/state/deployments.ts",
+      "default": "./src/state/deployments.ts"
+    },
     "./state/issues": {
       "types": "./src/state/issues.ts",
       "default": "./src/state/issues.ts"
@@ -566,6 +570,10 @@
     "./pull-request-reply": {
       "types": "./src/pullRequestReply.ts",
       "default": "./src/pullRequestReply.ts"
+    },
+    "./deployment-presentation": {
+      "types": "./src/deploymentPresentation.ts",
+      "default": "./src/deploymentPresentation.ts"
     },
     "./issue-presentation": {
       "types": "./src/issuePresentation.ts",

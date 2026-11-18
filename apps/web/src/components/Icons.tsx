@@ -131,6 +131,12 @@ export const LinearIcon: Icon = (props) => (
   </svg>
 );
 
+export const VercelIcon: Icon = (props) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none">
+    <path fill="currentColor" d="m12 1.608 12 20.784H0Z" />
+  </svg>
+);
+
 export const CursorIcon: Icon = ({ className, ...props }) => (
   <svg
     {...props}

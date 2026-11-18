@@ -280,6 +280,7 @@ import { PullRequestGlyph } from "~/components/pullRequest/pullRequestIcons";
 import { readPullRequestListPreferences } from "~/components/pullRequest/pullRequestListPreferences";
 import { readIssueListPreferences } from "~/components/issue/issueListPreferences";
 import { IssueGlyph } from "~/components/issue/issuePresentation";
+import { DeploymentGlyph } from "~/components/deployment/deploymentPresentation";
 import { useThreadRouteTarget } from "../hooks/useThreadRouteTarget";
 import { threadRecentUse } from "@t3tools/shared/paletteSearch";
 
@@ -1671,6 +1672,23 @@ function OpenCommandPaletteDialog(props: {
       icon: <IssueGlyph.issue className={ITEM_ICON_CLASS} />,
       run: async () => {
         await navigate({ to: "/issues", search: readIssueListPreferences() });
+      },
+    });
+  }
+
+  if (
+    environments.some(
+      (environment) => environment.serverConfig?.environment.capabilities.deployments === true,
+    )
+  ) {
+    actionItems.push({
+      kind: "action",
+      value: "action:deployments",
+      searchTerms: ["deployments", "deployment", "deploy", "vercel", "build logs", "runtime logs"],
+      title: "Open deployments",
+      icon: <DeploymentGlyph.deployment className={ITEM_ICON_CLASS} />,
+      run: async () => {
+        await navigate({ to: "/deployments" });
       },
     });
   }

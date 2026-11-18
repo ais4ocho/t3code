@@ -34,6 +34,7 @@ import { Switch } from "../ui/switch";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 
 import { GitIcon, JujutsuIcon, type Icon } from "../Icons";
+import { DeploymentProviderSettings } from "./DeploymentProviderSettings";
 import { IssueTrackerSettings } from "./IssueTrackerSettings";
 import { SourceControlHostSettings } from "./SourceControlHostSettings";
 import { SourceControlAccountSettings } from "./SourceControlAccountSettings";
@@ -584,6 +585,7 @@ export function SourceControlSettingsPanel() {
       {environmentId === null ? null : (
         <IssueTrackerSettings key={environmentId} environmentId={environmentId} />
       )}
+      {environmentId === null ? null : <DeploymentProviderSettings environmentId={environmentId} />}
 
       <SourceControlWritingSettingsSection />
     </SettingsPageContainer>

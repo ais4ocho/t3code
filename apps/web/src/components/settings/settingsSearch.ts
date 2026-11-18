@@ -1162,6 +1162,13 @@ export const SETTINGS_SEARCH_ITEMS = [
     searchTerms: ["linear jira issues tracker team api key connect bind project"],
   },
   {
+    id: "deployment-providers",
+    title: "Deployments",
+    to: "/settings/source-control",
+    scope: "environment-defaults",
+    searchTerms: ["vercel deployment provider cli build runtime logs sign in"],
+  },
+  {
     id: "source-control",
     title: "Source control",
     to: "/settings/source-control",

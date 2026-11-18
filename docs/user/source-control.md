@@ -382,6 +382,22 @@ issues they work on with the `link_issue` tool.
 
 Writing to a tracker over a remote connection requires the `source-control:write` scope.
 
+## Deployments
+
+The Deployments page lists the recent Vercel deployments of every project linked to Vercel,
+newest first. Open it from the sidebar's utility row or with **Open deployments** in the command
+palette. Select a deployment to open it beside the list and read its build logs and runtime
+logs; the logs of a deployment that is still building keep updating. A thread's details show the
+newest deployment of the thread's branch, which opens beside the thread.
+
+Deployments are read through the Vercel CLI on the machine running the T3 Code server. Install it
+there, sign in with `vercel login`, and link the project folder with `vercel link` so it has a
+`.vercel/project.json`. Settings → Source control & issues shows whether the CLI is installed and
+which account it is signed in to.
+
+Monorepo links through `.vercel/repo.json` and providers other than Vercel are not supported yet.
+Runtime logs cover the last 24 hours and need a team-owned Vercel project.
+
 ## GitHub stacks
 
 The Pull requests page shows each PR's position in its GitHub stack. Open the stack badge in a

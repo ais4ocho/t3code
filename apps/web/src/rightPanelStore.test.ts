@@ -640,11 +640,44 @@ describe("rightPanelStore", () => {
       migratePersistedRightPanelState({
         byThreadKey: {
           "env-1:pull-requests-panel": panelState,
+          "env-1:deployments-panel": panelState,
           "env-1:thread-A": panelState,
         },
       }),
     ).toEqual({
       byThreadKey: { "env-1:thread-A": panelState },
+      threadPanelVisibilityByThreadKey: {},
+    });
+  });
+
+  it("keeps a saved deployment surface through migration and drops a malformed one", () => {
+    const hostname = "t3code-9f3k2abcd-ping.vercel.app";
+    const saved = {
+      id: `deployment:${hostname}`,
+      kind: "deployment",
+      environmentId: "env-1",
+      projectId: "project-a",
+      hostname,
+      branch: "main",
+    };
+    expect(
+      migratePersistedRightPanelState({
+        byThreadKey: {
+          "env-1:thread-A": {
+            isOpen: true,
+            activeSurfaceId: saved.id,
+            surfaces: [
+              saved,
+              { ...saved, id: "deployment:--prod", hostname: "--prod" },
+              { id: "deployment:no-project.vercel.app", kind: "deployment", hostname },
+            ],
+          },
+        },
+      }),
+    ).toEqual({
+      byThreadKey: {
+        "env-1:thread-A": { isOpen: true, activeSurfaceId: saved.id, surfaces: [saved] },
+      },
       threadPanelVisibilityByThreadKey: {},
     });
   });
@@ -1116,6 +1149,16 @@ describe("rightPanelStore", () => {
     expect(pullRequestSurfaceId({ ...first, host: "GITHUB.COM" })).toBe(
       pullRequestSurfaceId(first),
     );
+  });
+
+  it("keeps one tab per deployment and moves it to the list it was last opened from", () => {
+    const deployment = { projectId: "project-a", hostname: "t3code-9f3k2abcd-ping.vercel.app" };
+    const id = `deployment:${deployment.hostname}`;
+    useRightPanelStore.getState().openDeployment(refA, deployment);
+    useRightPanelStore.getState().openDeployment(refA, { ...deployment, branch: "main" });
+    const state = selectThreadRightPanelState(useRightPanelStore.getState().byThreadKey, refA);
+    expect(state.surfaces).toEqual([{ id, kind: "deployment", ...deployment, branch: "main" }]);
+    expect(state.activeSurfaceId).toBe(id);
   });
 
   it("keeps the page's panel tabs reachable when the set of connected servers changes", () => {

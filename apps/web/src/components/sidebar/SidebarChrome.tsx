@@ -13,7 +13,11 @@ import {
 } from "../../navigationHistory";
 import { primaryServerKeybindingsAtom } from "../../state/server";
 import { cn } from "../../lib/utils";
-import { useIssuesSupported, usePullRequestsSupported } from "../../state/environments";
+import {
+  useDeploymentsSupported,
+  useIssuesSupported,
+  usePullRequestsSupported,
+} from "../../state/environments";
 import { T3Wordmark } from "../T3Wordmark";
 import {
   resolveEnvironmentIdentificationPillLabel,
@@ -35,6 +39,7 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import { readPullRequestListPreferences } from "../pullRequest/pullRequestListPreferences";
 import { readIssueListPreferences } from "../issue/issueListPreferences";
 import { IssueGlyph } from "../issue/issuePresentation";
+import { DeploymentGlyph } from "../deployment/deploymentPresentation";
 import { isSidebarUtilityPage, useNavigateToMainApp } from "./mainAppLocation";
 import { SidebarThreadUndoNotice } from "./SidebarThreadUndoNotice";
 import { SidebarProviderUpdatePill } from "./SidebarProviderUpdatePill";
@@ -229,6 +234,7 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
   });
   const pullRequestsSupported = usePullRequestsSupported();
   const issuesSupported = useIssuesSupported();
+  const deploymentsSupported = useDeploymentsSupported();
   const closeMobileSidebar = () => {
     if (isMobile) {
       setOpenMobile(false);
@@ -244,6 +250,10 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
   const handleIssuesClick = () => {
     closeMobileSidebar();
     void navigate({ to: "/issues", search: readIssueListPreferences() });
+  };
+  const handleDeploymentsClick = () => {
+    closeMobileSidebar();
+    void navigate({ to: "/deployments" });
   };
   const handleSettingsClick = () => {
     closeMobileSidebar();
@@ -290,6 +300,13 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
               icon={<IssueGlyph.issue />}
               label="Issues"
               onClick={handleIssuesClick}
+            />
+          ) : null}
+          {deploymentsSupported ? (
+            <SidebarUtilityItem
+              icon={<DeploymentGlyph.deployment />}
+              label="Deployments"
+              onClick={handleDeploymentsClick}
             />
           ) : null}
           <SidebarUtilityItem

@@ -20,6 +20,8 @@ import {
   PersistentThreadTerminalPanel,
   type PersistentThreadTerminalPanelProps,
 } from "../PersistentThreadTerminals";
+import { DeploymentDetailGhost } from "../deployment/DeploymentDetailGhost";
+import { DeploymentDetailPanel } from "../deployment/DeploymentDetailPanel";
 import { IssueDetailPanel } from "../issue/IssueDetailPanel";
 import { pullRequestPanelContext } from "../pullRequest/pullRequestDetail.logic";
 import { PullRequestDetailPanel } from "../pullRequest/PullRequestDetailPanel";
@@ -80,6 +82,7 @@ export function RightPanelSurfaceContent(props: {
   readonly terminal: RightPanelTerminalProps;
   readonly pullRequest: RightPanelPullRequestProps;
   readonly issuesSupported: boolean;
+  readonly deploymentsSupported: boolean;
   readonly files: RightPanelFileProps;
   readonly sideChatParentPanel: SideChatParentPanel;
 }) {
@@ -206,6 +209,27 @@ export function RightPanelSurfaceContent(props: {
               ...(reference.host ? { host: reference.host } : {}),
             });
           }}
+        />
+      );
+    case "deployment":
+      if (!props.pullRequest.capabilityKnown) return <DeploymentDetailGhost />;
+      if (!props.deploymentsSupported) {
+        return (
+          <PullRequestsUnavailableState
+            title="Deployments unavailable"
+            error="Update this environment's T3 Code server to browse deployments."
+          />
+        );
+      }
+      return (
+        <DeploymentDetailPanel
+          key={surface.id}
+          environmentId={
+            (surface.environmentId as EnvironmentId | undefined) ?? props.environmentId
+          }
+          projectId={surface.projectId as ProjectId}
+          hostname={surface.hostname}
+          branch={surface.branch}
         />
       );
     case "pull-requests":

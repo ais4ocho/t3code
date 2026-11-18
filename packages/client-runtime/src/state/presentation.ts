@@ -335,6 +335,13 @@ export function createEnvironmentSummaryAtoms(input: {
           .issues === true,
     ),
   );
+  const deploymentsSupportedAtom = Atom.make((get) =>
+    get(environmentIdsAtom).some(
+      (environmentId) =>
+        get(input.presentationAtom(environmentId))?.serverConfig?.environment.capabilities
+          .deployments === true,
+    ),
+  );
   return {
     environmentIdsAtom,
     connectedEnvironmentIdsAtom,
@@ -343,5 +350,6 @@ export function createEnvironmentSummaryAtoms(input: {
     machineByIdAtom,
     pullRequestsSupportedAtom,
     issuesSupportedAtom,
+    deploymentsSupportedAtom,
   };
 }
