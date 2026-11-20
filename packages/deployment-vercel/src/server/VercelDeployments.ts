@@ -10,6 +10,7 @@ import * as FileSystem from "effect/FileSystem";
 
 import {
   cliFailureDetail,
+  logCursorReads,
   parseBuildLogs,
   parseDeploymentList,
   parseDeploymentState,
@@ -186,6 +187,9 @@ export const make = Effect.gen(function* () {
           const page = parseBuildLogs(events.stdout);
           if (page === null) return yield* failure("logs", "failed", cliFailureDetail(events));
           return { ...page, nextCursor: null, live: state === "queued" || state === "building" };
+        }
+        if (input.cursor !== undefined && !logCursorReads(input.cursor, link)) {
+          return yield* failure("logs", "failed", "These older logs belong to another project.");
         }
         const output = yield* runExpectingSuccess({
           operation: "logs",

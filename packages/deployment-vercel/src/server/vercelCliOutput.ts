@@ -8,7 +8,9 @@ import {
   type DeploymentState,
 } from "@t3tools/contracts";
 import * as DateTime from "effect/DateTime";
+import * as Base64Url from "effect/encoding/Base64Url";
 import * as Option from "effect/Option";
+import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 
 export const VERCEL = DeploymentProviderKind.make("vercel");
@@ -290,4 +292,26 @@ export function parseRuntimeLogs(
   }
   lines.reverse();
   return { lines, truncated: cutShort, nextCursor };
+}
+
+const decodeLogCursor = Schema.decodeUnknownOption(
+  Schema.fromJsonString(
+    Schema.Struct({ ownerId: Schema.String, projectIds: Schema.Array(Schema.String) }),
+  ),
+);
+
+/**
+ * Whether a `vercel logs --next` cursor reads `link`'s project and nothing else. The cursor is the
+ * CLI's own base64url JSON and names the team and projects it reads, so a client could otherwise
+ * point it anywhere the server's Vercel login reaches.
+ */
+export function logCursorReads(cursor: string, link: VercelProjectLink): boolean {
+  return Base64Url.decodeString(cursor).pipe(
+    Result.getOrUndefined,
+    (json) => (json === undefined ? Option.none() : decodeLogCursor(json)),
+    Option.exists(
+      ({ ownerId, projectIds }) =>
+        ownerId === link.orgId && projectIds.length === 1 && projectIds[0] === link.projectId,
+    ),
+  );
 }

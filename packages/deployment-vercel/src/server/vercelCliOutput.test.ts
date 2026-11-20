@@ -2,9 +2,11 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { assert, describe, it } from "@effect/vitest";
+import * as Base64Url from "effect/encoding/Base64Url";
 
 import {
   cliFailureDetail,
+  logCursorReads,
   parseBuildLogs,
   parseDeploymentList,
   parseDeploymentState,
@@ -158,5 +160,18 @@ describe("vercelCliOutput", () => {
     );
     assert.strictEqual(page.nextCursor, "eyJ2IjoxfQ");
     assert.strictEqual(parseRuntimeLogs('{"type":"summary"}', true).nextCursor, null);
+  });
+
+  it("accepts a log cursor only for the linked project", () => {
+    const link = { projectId: "prj_1", orgId: "team_1", projectName: undefined };
+    const cursor = (payload: object) =>
+      Base64Url.encode(JSON.stringify({ v: 1, cursor: "c", ...payload }));
+    assert.isTrue(logCursorReads(cursor({ ownerId: "team_1", projectIds: ["prj_1"] }), link));
+    assert.isFalse(logCursorReads(cursor({ ownerId: "team_2", projectIds: ["prj_1"] }), link));
+    assert.isFalse(logCursorReads(cursor({ ownerId: "team_1", projectIds: ["prj_2"] }), link));
+    assert.isFalse(
+      logCursorReads(cursor({ ownerId: "team_1", projectIds: ["prj_1", "prj_2"] }), link),
+    );
+    assert.isFalse(logCursorReads("eyJ2IjoxfQ", link));
   });
 });
