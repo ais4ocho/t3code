@@ -398,7 +398,8 @@ The Deployments page lists the recent Vercel deployments of every project linked
 newest first. Open it from the sidebar's utility row or with **Open deployments** in the command
 palette. Select a deployment to open it beside the list and read its build logs and runtime
 logs; the logs of a deployment that is still building keep updating. A thread's details show the
-newest deployment of the thread's branch, which opens beside the thread.
+newest deployment of the thread's branch, which opens beside the thread. Agents in a thread can
+list the project's deployments and read their logs too, so you can ask one why a build failed.
 
 Deployments are read through the Vercel CLI on the machine running the T3 Code server. Install it
 there, sign in with `vercel login`, and link the project folder with `vercel link` so it has a

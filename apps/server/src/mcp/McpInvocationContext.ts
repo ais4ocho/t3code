@@ -23,6 +23,7 @@ const ALL_MCP_CAPABILITIES = [
   "device",
   "pull-requests",
   "issues",
+  "deployments",
 ] as const;
 export type McpCapability = (typeof ALL_MCP_CAPABILITIES)[number];
 

@@ -86,6 +86,8 @@ import { ToolSearchToolkit } from "./toolkits/toolSearch/tools.ts";
 import { PullRequestsToolkit } from "./toolkits/pullRequests/tools.ts";
 import * as IssuesHandlers from "./toolkits/issues/handlers.ts";
 import { IssuesToolkit } from "./toolkits/issues/tools.ts";
+import * as DeploymentsHandlers from "./toolkits/deployments/handlers.ts";
+import { DeploymentsToolkit } from "./toolkits/deployments/tools.ts";
 import * as DeviceHandlers from "./toolkits/device/handlers.ts";
 import {
   DeviceScreenshotTool,
@@ -1367,6 +1369,8 @@ export const layerPullRequestsToolkit = toolkitRegistration(
 
 const layerIssuesToolkit = toolkitRegistration(IssuesToolkit, IssuesHandlers.layer);
 
+const layerDeploymentsToolkit = toolkitRegistration(DeploymentsToolkit, DeploymentsHandlers.layer);
+
 const layerDeviceStandardToolkitRegistration = toolkitRegistration(
   DeviceStandardToolkit,
   DeviceHandlers.layerStandard,
@@ -1424,6 +1428,7 @@ export const layerTools = Layer.mergeAll(
   layerWorktreeToolkitRegistration,
   layerPullRequestsToolkit,
   layerIssuesToolkit,
+  layerDeploymentsToolkit,
   layerDeviceToolkit,
   layerHtmlToolkit,
   layerMessageToolkit,

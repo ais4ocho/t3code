@@ -75,6 +75,8 @@ export type T3McpToolSummaryAction =
   | "link-issue"
   | "unlink-issue"
   | "list-thread-issues"
+  | "list-deployments"
+  | "read-deployment-logs"
   | "read-pr"
   | "list-repo-prs"
   | "create-pr"
@@ -172,6 +174,11 @@ const T3_MCP_TOOLS: Readonly<Record<string, T3McpToolDefinition>> = {
   link_issue: tool(["Link", "Linking", "Linked", "an issue"], "link-issue"),
   unlink_issue: tool(["Unlink", "Unlinking", "Unlinked", "an issue"], "unlink-issue"),
   list_thread_issues: tool(["Check", "Checking", "Checked", "linked issues"], "list-thread-issues"),
+  list_deployments: tool(["List", "Listing", "Listed", "deployments"], "list-deployments"),
+  read_deployment_logs: tool(
+    ["Read", "Reading", "Read", "deployment logs"],
+    "read-deployment-logs",
+  ),
   pull_request_read: tool(["Read", "Reading", "Read", "a pull request"], "read-pr", "pull-request"),
   pull_request_list: tool(
     ["List", "Listing", "Listed", "pull requests"],

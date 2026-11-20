@@ -726,7 +726,7 @@ const clientScope = (
   thread: undefined,
   client: { sessionId: "session-1", label: "Claude Code", access },
   issuedAt: 0,
-  capabilities: new Set(["orchestration", "worktree", "pull-requests", "issues"]),
+  capabilities: new Set(["orchestration", "worktree", "pull-requests", "issues", "deployments"]),
 });
 
 it.effect("a client caller targets any thread within its ceiling and cannot act as a thread", () =>

@@ -800,6 +800,40 @@ export function summarizeT3ToolCalls(
       }
       break;
     }
+    case "list-deployments": {
+      const count = selected.length;
+      label = done
+        ? resolve(
+            msg(
+              "{count, plural, one {Listed deployments {count} time} other {Listed deployments {count} times}}",
+              { count },
+            ),
+          )
+        : resolve(
+            msg(
+              "{count, plural, one {Tried to list deployments {count} time} other {Tried to list deployments {count} times}}",
+              { count },
+            ),
+          );
+      break;
+    }
+    case "read-deployment-logs": {
+      const count = selected.length;
+      label = done
+        ? resolve(
+            msg(
+              "{count, plural, one {Read deployment logs {count} time} other {Read deployment logs {count} times}}",
+              { count },
+            ),
+          )
+        : resolve(
+            msg(
+              "{count, plural, one {Tried to read deployment logs {count} time} other {Tried to read deployment logs {count} times}}",
+              { count },
+            ),
+          );
+      break;
+    }
     case "html-preview": {
       const count = selected.length;
       label = done
