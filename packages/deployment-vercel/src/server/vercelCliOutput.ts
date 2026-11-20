@@ -124,7 +124,8 @@ function deploymentFrom(raw: unknown): Deployment | null {
     state,
     target: row.target === "production" ? "production" : "preview",
     createdAt,
-    readyAt: row.ready == null ? undefined : isoTime(row.ready),
+    // Vercel stamps `ready` while the deployment is still building.
+    readyAt: state !== "ready" || row.ready == null ? undefined : isoTime(row.ready),
     branch: gitMeta(meta, "CommitRef"),
     commitSha: gitMeta(meta, "CommitSha"),
     commitTitle: nonEmpty(gitMeta(meta, "CommitMessage")?.split("\n", 1)[0]?.slice(0, 200)),

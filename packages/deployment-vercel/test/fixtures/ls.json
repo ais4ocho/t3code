@@ -44,6 +44,7 @@
       "target": null,
       "createdAt": 1794598639512,
       "buildingAt": 1794598640613,
+      "ready": 1794598640700,
       "creator": {
         "uid": "uid_1",
         "username": "octocat"
