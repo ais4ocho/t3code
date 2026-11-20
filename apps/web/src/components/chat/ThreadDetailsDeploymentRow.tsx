@@ -1,10 +1,8 @@
-import {
-  deploymentTargetLabel,
-  deploymentTitle,
-} from "@t3tools/client-runtime/deployment-presentation";
+import { deploymentTitle } from "@t3tools/client-runtime/deployment-presentation";
 import { deploymentListRefreshMs } from "@t3tools/client-runtime/state/deployments";
 import { selectEnvironmentQueryData } from "@t3tools/client-runtime/state/runtime";
 import type { ProjectId, ScopedThreadRef } from "@t3tools/contracts";
+import { useGT, useMessages } from "gt-react";
 
 import { useLiveRefresh } from "~/hooks/useLiveRefresh";
 import { cn } from "~/lib/utils";
@@ -30,6 +28,8 @@ export function ThreadDetailsDeploymentRow({
   projectId: ProjectId | null;
   branch: string | null;
 }) {
+  const gt = useGT();
+  const messages = useMessages();
   const { environmentId } = threadRef;
   const supported =
     useServerConfigs().get(environmentId)?.environment.capabilities.deployments === true;
@@ -55,12 +55,18 @@ export function ThreadDetailsDeploymentRow({
   const deployment = list?.status === "linked" ? list.deployments[0] : undefined;
   if (deployment === undefined || projectId === null || branch === null) return null;
 
-  const mark = deploymentStateMark(deployment.state);
-  const label = `${deploymentTargetLabel(deployment.target)} deployment`;
+  const mark = deploymentStateMark(deployment.state, messages);
+  const label =
+    deployment.target === "production" ? gt("Production deployment") : gt("Preview deployment");
   return (
     <ThreadDetailsControl
       part="row"
-      aria-label={`${label}, ${mark.label.toLowerCase()}: ${deploymentTitle(deployment)}`}
+      aria-label={gt("{deployment}, {state}: {title}", {
+        $context: "screen reader label: deployment kind, its status, then its commit title",
+        deployment: label,
+        state: mark.label.toLowerCase(),
+        title: deploymentTitle(deployment),
+      })}
       onClick={(event) => {
         event.stopPropagation();
         useRightPanelStore.getState().openDeployment(threadRef, {

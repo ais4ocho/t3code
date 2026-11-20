@@ -1,5 +1,7 @@
 import type { Deployment, DeploymentState, DeploymentTarget } from "@t3tools/contracts";
 import { formatDuration } from "@t3tools/shared/orchestrationTiming";
+import { mFallback, msg } from "gt-i18n";
+import type { MFunctionType } from "gt-i18n/types";
 
 export type DeploymentTone = "pending" | "success" | "failure" | "neutral";
 
@@ -9,19 +11,28 @@ export interface DeploymentStatePresentation {
 }
 
 const DEPLOYMENT_STATE_PRESENTATION: Record<DeploymentState, DeploymentStatePresentation> = {
-  queued: { label: "Queued", tone: "pending" },
-  building: { label: "Building", tone: "pending" },
-  ready: { label: "Ready", tone: "success" },
-  error: { label: "Failed", tone: "failure" },
-  canceled: { label: "Canceled", tone: "neutral" },
+  queued: { label: msg("Queued", { $context: "deployment status" }), tone: "pending" },
+  building: { label: msg("Building", { $context: "deployment status" }), tone: "pending" },
+  ready: { label: msg("Ready", { $context: "deployment status" }), tone: "success" },
+  error: { label: msg("Failed", { $context: "deployment status" }), tone: "failure" },
+  canceled: { label: msg("Canceled", { $context: "deployment status" }), tone: "neutral" },
 };
 
-export function deploymentStatePresentation(state: DeploymentState): DeploymentStatePresentation {
-  return DEPLOYMENT_STATE_PRESENTATION[state];
+export function deploymentStatePresentation(
+  state: DeploymentState,
+  resolve: MFunctionType = mFallback,
+): DeploymentStatePresentation {
+  const { label, tone } = DEPLOYMENT_STATE_PRESENTATION[state];
+  return { label: resolve(label), tone };
 }
 
-export function deploymentTargetLabel(target: DeploymentTarget): string {
-  return target === "production" ? "Production" : "Preview";
+export function deploymentTargetLabel(
+  target: DeploymentTarget,
+  resolve: MFunctionType = mFallback,
+): string {
+  return target === "production"
+    ? resolve(msg("Production", { $context: "deployment environment" }))
+    : resolve(msg("Preview", { $context: "deployment environment" }));
 }
 
 /** What a row calls a deployment: its commit when it has one, else where it is served. */

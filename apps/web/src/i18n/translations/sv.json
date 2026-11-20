@@ -51,6 +51,13 @@
   "d810ecd91e8cf9d0": "Installera Origin CLI med {install} och kör sedan {login}.",
   "eb0f60ef4f92ab7d": "Installera {fj} 0.6 eller senare från {fjUrl} och kör {fjLogin}, eller installera {tea} 0.16 eller senare från {teaUrl} och kör {teaLogin} för varje Forgejo- eller Gitea-server.",
   "d026a85e2e50e675": "Installera GitCafe CLI med {install} och kör sedan {login}, spara en token i Inställningar eller ange {variable} på servern.",
+  "e8af0313e2c20558": "I kö",
+  "d8711474372ff774": "Byggs",
+  "851382b475c1702f": "Klar",
+  "c820e2ab63fafd5a": "Misslyckades",
+  "90a6f6098e07600a": "Avbruten",
+  "d771347e5a909305": "Produktion",
+  "292ab0829743e643": "Förhandsversion",
   "79d776428f4d0650": "Filen kunde inte läsas in. Återanslut och försök igen.",
   "3ea34cbb1ca5ba9b": "Förhandsvisningen avbröts.",
   "7c0af279ecb3da3a": "Strömmande förhandsvisning av filer är inte tillgänglig i den här körmiljön.",
@@ -1759,6 +1766,7 @@
   "594bcbef04093f72": "Öppna WSL-mapp",
   "04fd71efaa2c3b92": "Öppna pull requests",
   "57e875b79b98ab82": "Öppna ärenden",
+  "9cebcdcf13d2c50b": "Öppna driftsättningar",
   "f1db0a234c777a1d": "Använd T3 Code i en annan app (MCP)",
   "a0cc19e60dd99851": "Öppna användning",
   "46694969044eee98": "Fokusera nästa område i arbetsytan",
@@ -3907,6 +3915,8 @@
   "90062342f04966ff": "Uppdatera den här miljöns T3 Code-server för att bläddra bland pull requests.",
   "5e7157db126f1641": "Ärenden är inte tillgängliga",
   "42ade0e14ff6af94": "Uppdatera T3 Code-servern i den här miljön för att bläddra bland ärenden.",
+  "92b6366930d59760": "Driftsättningar är inte tillgängliga",
+  "31b5d712dd63ba86": "Uppdatera T3 Code-servern i den här miljön för att bläddra bland driftsättningar.",
   "993dcd04611f9571": "Spara säkert",
   "ccbe48efc8e30c52": "Ta bort sidochatten ”{title}”?",
   "3a859b690f41e899": "Det här rensar dess konversationshistorik permanent.",
@@ -4043,6 +4053,9 @@
     },
     " till"
   ],
+  "899de04d79a3df3b": "Produktionsdriftsättning",
+  "7d9c0f41a65d0e3a": "Driftsättning av förhandsversion",
+  "01f72311f2d8f879": "{deployment}, {state}: {title}",
   "02d9667ff2c8e0b8": "Ärende {key}: {title}",
   "4276743ee60a3c62": "{count, plural, one {{count} kommentar} other {{count} kommentarer}}",
   "42f634397f3960aa": "Visa i tråddetaljer",
@@ -5045,6 +5058,64 @@
   "c752acb0b7088295": "Ansluten",
   "a097631b7acab9d8": "Väntar på godkännande…",
   "aabd9632196ee7e5": "Återansluter…",
+  "917c314b5d386352": "Läser in loggar",
+  "902bb8fb63935d3c": "Läser in driftsättning",
+  "f090df340dc64730": "Byggloggar",
+  "747c512fe0a099b4": "Körningsloggar",
+  "9f26eecf420db5e2": "Uppdatera driftsättning",
+  "7b27f319cd75e829": "Driftsättningsloggar",
+  "3ab8c33867359145": "Besök",
+  "ad54c3162d4f7d81": [
+    "skapad ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "12d7b7710486b733": [
+    "byggd på ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "eefbe4eea327471f": "Kunde inte läsa in byggloggar",
+  "b659e689e8b71955": "Inga byggutdata ännu.",
+  "594804cd6c3c2ea7": "Kunde inte läsa in körningsloggar",
+  "f002e517dedc8187": "Inga körningsloggar de senaste 24 timmarna.",
+  "4d2a7f018b0c1544": "Äldre loggar kunde inte läsas",
+  "4ff72c2acc7f6656": "Läser in…",
+  "7170d7f28948f714": "Läs in äldre",
+  "630db735b9473bbd": "Visar bara de senaste raderna.",
+  "5ece0acf3667be7a": "Bygger. Nya rader visas när de kommer in.",
+  "563d2583d5eda8aa": "Kunde inte läsa in driftsättningar",
+  "cee803aec17202e6": "Brödsmulor för driftsättningar",
+  "92cb8290bee02d0f": "Välj en driftsättning först",
+  "f9526598cf1ded85": "Uppdatera driftsättningar",
+  "ebb372558917923a": "Inga länkade projekt",
+  "e0764c76f53314fe": [
+    "Ett projekt visar sina driftsättningar här när dess mapp har länkats med",
+    " ",
+    {
+      "t": "code",
+      "i": 1,
+      "c": "vercel link"
+    },
+    "."
+  ],
+  "1cdca885ca62f8c0": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " Visar driftsättningarna som lästes in."
+  ],
+  "e979f65ec930d7b5": "Inga driftsättningar ännu",
+  "ab374a50446908bd": "Driftsätt ett länkat projekt för att se det här.",
+  "b090645043af053d": "Driftsättningar",
   "a80895f122d7020f": "Kunde inte öppna länken",
   "2a1758375b2701f3": "Kunde inte lägga till backend",
   "6730fa8ae68fad99": "Det gick inte att lägga till backend.",
@@ -5426,7 +5497,6 @@
   "3c3e2a86f7fb439d": "Det gick inte att kopiera omnämnandet",
   "b3a779a7cf9fccab": "Öppna en chatt för det här projektet och försök igen.",
   "e3796d26e9912913": "Chatten kan inte ta emot inmatning just nu.",
-  "4ff72c2acc7f6656": "Läser in…",
   "69858f722a57708c": "Sök filer i {projectName}",
   "e1e1094e43a5f3d7": "{error} Klicka för att försöka igen.",
   "ddb58ada5516a46d": "Filer i {projectName}",
@@ -5771,14 +5841,13 @@
   "b6a29fff7c7c0808": "Ingen",
   "54420465784bb1bd": "Läs in äldre kommentarer",
   "9d82ebf35bfb4043": "Inget har hänt här än.",
-  "1cf216566c1ee064": "Projektet är inte tillgängligt",
   "b5ddadeb0810688c": "Status",
   "93c1fc19d9bf1db0": "Inblandning",
   "d5a8b335d88b65bc": "{hidden} dolda",
   "2160067266a61dd8": "Alla",
   "cd4ec4acf33c65b9": "{count, plural, one {{count} etikett} other {{count} etiketter}}",
   "bfd20acb8b7dee6b": "Vem som helst",
-  "ad208e3e32c85029": "Dölj alla",
+  "aead644e2cf1233f": "Visa alla",
   "77ce79d865716719": "Inga matchande projekt.",
   "af7eb4f9c7f0f575": "Filter",
   "08247dd39b0c85ff": "Tilldelad",
@@ -6459,7 +6528,6 @@
   "64d0189be492147c": "Det gick inte att öppna kontrolldetaljer",
   "600347ca50400a54": "Läser in kontroller…",
   "1b381201aba745c2": "Inga kontroller rapporterade",
-  "aead644e2cf1233f": "Visa alla",
   "a6d75a4380173c60": "Öppna kontroller: {summary}",
   "be3d1766bad18693": "Kontroller: {summary}",
   "425e4a3d6c5c2867": "{count, plural, one {{count} misslyckades} other {{count} misslyckades}}",
@@ -8130,6 +8198,33 @@
     " min. Agenter som körs stoppas vid omstarten."
   ],
   "c56b618d212bf018": "Starta om och återta",
+  "885a8b3714f09e46": "Inloggad som {account}",
+  "9e8db85a88bbfa4a": "Inloggad",
+  "5ff1771ccc4fa087": "Kunde inte kontrollera om {provider} CLI är inloggat.",
+  "548e848e570ef3cb": "Kunde inte läsa in leverantörer för driftsättning",
+  "ec7ada2eee4bff61": "T3 Code läser ett länkat projekts driftsättningar och loggar via leverantörens CLI på servern.",
+  "d0aae7eb73362150": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " CLI är utloggat. Kör",
+    " ",
+    {
+      "t": "code",
+      "i": 2,
+      "c": [
+        {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        " login"
+      ]
+    },
+    " på servern."
+  ],
   "6b6ac43d7def4a04": "Kontrollerar miljöer…",
   "ec617524d49f21be": "{failed} av {total} misslyckades",
   "c3a1c907ccb50ecf": "Anslutningskontrollerna lyckades",
@@ -9729,6 +9824,7 @@
   "51497bd401292062": "Håll ned",
   "9d6cc6ac23312071": "Dubbeltryck",
   "f001fa7b329c8fbf": "Dölj lyckade",
+  "ad208e3e32c85029": "Dölj alla",
   "c80e4bb3201efd71": "Zen",
   "0cb9ffcd1fb46b0c": "Endast status",
   "cf0f7fc3df26fa75": "Status och meddelanden",
@@ -9938,6 +10034,7 @@
   "573ea5fdf293a9d6": "Alla utcheckningar",
   "470ad8c54049d1e1": "Sök utcheckningar",
   "7e2dfdd9f97fc027": "Projektomfång",
+  "1cf216566c1ee064": "Projektet är inte tillgängligt",
   "c1b8c351aa90f319": [
     {
       "t": "span",
@@ -10469,7 +10566,6 @@
   "f7b3ac7ea71b2a41": "Visa konto",
   "8de5a4366b58bdba": "Dölj konto",
   "362486999f207b7d": "Inloggad, men token som sparats nedan används så länge den kan läsas.",
-  "9e8db85a88bbfa4a": "Inloggad",
   "4e4ab7e39d3cb684": "Godkänn appen på GitHub för att slutföra inloggningen.",
   "154b0a0947b7f831": "En mycket högre gräns för GitHub API än en personlig token eller gh login.",
   "e860c536bb9cad2d": "Logga in med GitHub",
@@ -11612,6 +11708,8 @@
   "a22700a2aa679898": "Standardmetod för merge",
   "c4548ce84893201b": "pull request merge squash rebase senast vald",
   "f6c5ffe0b40ce8e2": "linear jira ärenden ärendehanterare team api-nyckel anslut koppla projekt issues",
+  "088a0e8096814237": "Driftsättningar",
+  "478c8d551a33e1c9": "vercel driftsättning leverantör cli bygg körning loggar logga in",
   "a4380762611c94e4": "Versionshantering",
   "2f251b69a6c324f3": "Intervall för Git-fetch",
   "deed4a583dfa2c44": "automatisk fjärrgren uppdatera bakgrund autentiseringsuppgifter säkerhetsnycklar sekunder av fetch",
@@ -11682,6 +11780,7 @@
   "2a50e229df85d553": "Gå framåt",
   "8aa6404c8018ea67": "T3 Code start",
   "8e9626aa27cb188a": "Ärenden",
+  "74f9b178876191fb": "Driftsättningar",
   "9d2fc1003e82feb1": "Användning",
   "20283eb1dd6119f9": "{count, plural, one {{count} bilaga} other {{count} bilagor}}",
   "ffedb03b620f97a9": "Ej skickat utkast",

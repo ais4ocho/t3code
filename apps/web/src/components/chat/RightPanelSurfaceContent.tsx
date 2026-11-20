@@ -218,8 +218,8 @@ export function RightPanelSurfaceContent(props: {
       if (!props.deploymentsSupported) {
         return (
           <PullRequestsUnavailableState
-            title="Deployments unavailable"
-            error="Update this environment's T3 Code server to browse deployments."
+            title={gt("Deployments unavailable")}
+            error={gt("Update this environment's T3 Code server to browse deployments.")}
           />
         );
       }

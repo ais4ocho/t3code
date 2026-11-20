@@ -3,6 +3,7 @@ import {
   deploymentTitle,
 } from "@t3tools/client-runtime/deployment-presentation";
 import type { ListedDeployment } from "@t3tools/client-runtime/state/deployments";
+import { useMessages } from "gt-react";
 import { memo } from "react";
 
 import { cn } from "~/lib/utils";
@@ -21,6 +22,7 @@ function DeploymentRowImpl({
   onSelect: (entry: ListedDeployment) => void;
 }) {
   const { deployment } = entry;
+  const messages = useMessages();
   return (
     <div
       className={cn(
@@ -41,7 +43,7 @@ function DeploymentRowImpl({
           meta={
             <>
               <span className="truncate">{entry.projectName}</span>
-              <span className="shrink-0">{deploymentTargetLabel(deployment.target)}</span>
+              <span className="shrink-0">{deploymentTargetLabel(deployment.target, messages)}</span>
               {deployment.branch ? (
                 <span className="truncate font-mono">{deployment.branch}</span>
               ) : null}

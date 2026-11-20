@@ -51,6 +51,13 @@
   "d810ecd91e8cf9d0": "Installez la CLI Origin avec {install}, puis exécutez {login}.",
   "eb0f60ef4f92ab7d": "Installez {fj} 0.6 ou version ultérieure depuis {fjUrl} et exécutez {fjLogin}, ou installez {tea} 0.16 ou version ultérieure depuis {teaUrl} et exécutez {teaLogin} pour chaque serveur Forgejo ou Gitea.",
   "d026a85e2e50e675": "Installez la CLI GitCafe avec {install}, puis exécutez {login}, enregistrez un jeton dans Paramètres ou définissez {variable} sur le serveur.",
+  "e8af0313e2c20558": "En file d’attente",
+  "d8711474372ff774": "Build en cours",
+  "851382b475c1702f": "Prêt",
+  "c820e2ab63fafd5a": "Échec",
+  "90a6f6098e07600a": "Annulé",
+  "d771347e5a909305": "Production",
+  "292ab0829743e643": "Aperçu",
   "79d776428f4d0650": "Le fichier n’a pas pu être chargé. Reconnectez-vous et réessayez.",
   "3ea34cbb1ca5ba9b": "Aperçu annulé.",
   "7c0af279ecb3da3a": "Les aperçus de fichiers en streaming ne sont pas disponibles dans cet environnement d’exécution.",
@@ -1759,6 +1766,7 @@
   "594bcbef04093f72": "Ouvrir un dossier WSL",
   "04fd71efaa2c3b92": "Ouvrir les pull requests",
   "57e875b79b98ab82": "Ouvrir les tickets",
+  "9cebcdcf13d2c50b": "Ouvrir les déploiements",
   "f1db0a234c777a1d": "Utiliser T3 Code dans une autre app (MCP)",
   "a0cc19e60dd99851": "Ouvrir l’utilisation",
   "46694969044eee98": "Activer la zone de travail suivante",
@@ -3907,6 +3915,8 @@
   "90062342f04966ff": "Mettez à jour le serveur T3 Code de cet environnement pour parcourir les pull requests.",
   "5e7157db126f1641": "Tickets indisponibles",
   "42ade0e14ff6af94": "Mettez à jour le serveur T3 Code de cet environnement pour parcourir les tickets.",
+  "92b6366930d59760": "Déploiements indisponibles",
+  "31b5d712dd63ba86": "Mettez à jour le serveur T3 Code de cet environnement pour parcourir les déploiements.",
   "993dcd04611f9571": "Enregistrer de façon sécurisée",
   "ccbe48efc8e30c52": "Supprimer la discussion annexe « {title} » ?",
   "3a859b690f41e899": "Cela efface définitivement son historique de conversation.",
@@ -4043,6 +4053,9 @@
     },
     " de plus"
   ],
+  "899de04d79a3df3b": "Déploiement de production",
+  "7d9c0f41a65d0e3a": "Déploiement d’aperçu",
+  "01f72311f2d8f879": "{deployment}, {state} : {title}",
   "02d9667ff2c8e0b8": "Ticket {key} : {title}",
   "4276743ee60a3c62": "{count, plural, one {{count} commentaire} other {{count} commentaires}}",
   "42f634397f3960aa": "Afficher dans les détails du fil",
@@ -5045,6 +5058,64 @@
   "c752acb0b7088295": "Connecté",
   "a097631b7acab9d8": "En attente d’approbation…",
   "aabd9632196ee7e5": "Reconnexion…",
+  "917c314b5d386352": "Chargement des journaux",
+  "902bb8fb63935d3c": "Chargement du déploiement",
+  "f090df340dc64730": "Journaux de build",
+  "747c512fe0a099b4": "Journaux d’exécution",
+  "9f26eecf420db5e2": "Actualiser le déploiement",
+  "7b27f319cd75e829": "Journaux du déploiement",
+  "3ab8c33867359145": "Visiter",
+  "ad54c3162d4f7d81": [
+    "créé ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "12d7b7710486b733": [
+    "build en ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "eefbe4eea327471f": "Impossible de charger les journaux de build",
+  "b659e689e8b71955": "Aucune sortie de build pour l’instant.",
+  "594804cd6c3c2ea7": "Impossible de charger les journaux d’exécution",
+  "f002e517dedc8187": "Aucun journal d’exécution au cours des dernières 24 heures.",
+  "4d2a7f018b0c1544": "Impossible de lire les journaux plus anciens",
+  "4ff72c2acc7f6656": "Chargement…",
+  "7170d7f28948f714": "Charger les plus anciens",
+  "630db735b9473bbd": "Seules les lignes les plus récentes sont affichées.",
+  "5ece0acf3667be7a": "Build en cours. Les nouvelles lignes s’affichent à mesure qu’elles arrivent.",
+  "563d2583d5eda8aa": "Impossible de charger les déploiements",
+  "cee803aec17202e6": "Fil d’Ariane des déploiements",
+  "92cb8290bee02d0f": "Sélectionnez d’abord un déploiement",
+  "f9526598cf1ded85": "Actualiser les déploiements",
+  "ebb372558917923a": "Aucun projet lié",
+  "e0764c76f53314fe": [
+    "Un projet affiche ici ses déploiements une fois son dossier lié avec",
+    " ",
+    {
+      "t": "code",
+      "i": 1,
+      "c": "vercel link"
+    },
+    "."
+  ],
+  "1cdca885ca62f8c0": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " Les déploiements chargés sont affichés."
+  ],
+  "e979f65ec930d7b5": "Aucun déploiement pour l’instant",
+  "ab374a50446908bd": "Déployez un projet lié pour le voir ici.",
+  "b090645043af053d": "Déploiements",
   "a80895f122d7020f": "Impossible d’ouvrir le lien",
   "2a1758375b2701f3": "Impossible d’ajouter le backend",
   "6730fa8ae68fad99": "Échec de l’ajout du backend.",
@@ -5426,7 +5497,6 @@
   "3c3e2a86f7fb439d": "Échec de la copie de la mention",
   "b3a779a7cf9fccab": "Ouvrez une discussion pour ce projet et réessayez.",
   "e3796d26e9912913": "La discussion n’est pas prête à recevoir une saisie pour le moment.",
-  "4ff72c2acc7f6656": "Chargement…",
   "69858f722a57708c": "Rechercher dans les fichiers de {projectName}",
   "e1e1094e43a5f3d7": "{error} Cliquez pour réessayer.",
   "ddb58ada5516a46d": "Fichiers de {projectName}",
@@ -5771,14 +5841,13 @@
   "b6a29fff7c7c0808": "Personne",
   "54420465784bb1bd": "Charger les commentaires plus anciens",
   "9d82ebf35bfb4043": "Rien ne s’est encore passé ici.",
-  "1cf216566c1ee064": "Projet indisponible",
   "b5ddadeb0810688c": "État",
   "93c1fc19d9bf1db0": "Participation",
   "d5a8b335d88b65bc": "{hidden} masqués",
   "2160067266a61dd8": "Tous",
   "cd4ec4acf33c65b9": "{count, plural, one {{count} libellé} other {{count} libellés}}",
   "bfd20acb8b7dee6b": "N’importe qui",
-  "ad208e3e32c85029": "Tout masquer",
+  "aead644e2cf1233f": "Tout afficher",
   "77ce79d865716719": "Aucun projet correspondant.",
   "af7eb4f9c7f0f575": "Filtres",
   "08247dd39b0c85ff": "Assigné",
@@ -6454,7 +6523,6 @@
   "64d0189be492147c": "Impossible d’ouvrir les détails du check",
   "600347ca50400a54": "Chargement des checks…",
   "1b381201aba745c2": "Aucun check signalé",
-  "aead644e2cf1233f": "Tout afficher",
   "a6d75a4380173c60": "Ouvrir les checks : {summary}",
   "be3d1766bad18693": "Checks : {summary}",
   "425e4a3d6c5c2867": "{count, plural, one {{count} en échec} other {{count} en échec}}",
@@ -8125,6 +8193,34 @@
     " min. Les agents en cours s’arrêtent au redémarrage."
   ],
   "c56b618d212bf018": "Redémarrer et récupérer",
+  "885a8b3714f09e46": "Connecté en tant que {account}",
+  "9e8db85a88bbfa4a": "Connecté",
+  "5ff1771ccc4fa087": "Impossible de vérifier si la CLI {provider} est connectée.",
+  "548e848e570ef3cb": "Impossible de charger les fournisseurs de déploiement",
+  "ec7ada2eee4bff61": "T3 Code lit les déploiements et les journaux d’un projet lié via la CLI du fournisseur sur le serveur.",
+  "d0aae7eb73362150": [
+    "La CLI ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " est déconnectée. Exécutez",
+    " ",
+    {
+      "t": "code",
+      "i": 2,
+      "c": [
+        {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        " login"
+      ]
+    },
+    " sur le serveur."
+  ],
   "6b6ac43d7def4a04": "Vérification des environnements…",
   "ec617524d49f21be": "{failed} sur {total} en échec",
   "c3a1c907ccb50ecf": "Vérifications de connexion réussies",
@@ -9721,6 +9817,7 @@
   "51497bd401292062": "Appui long",
   "9d6cc6ac23312071": "Double appui",
   "f001fa7b329c8fbf": "Masquer les réussis",
+  "ad208e3e32c85029": "Tout masquer",
   "c80e4bb3201efd71": "Zen",
   "0cb9ffcd1fb46b0c": "Statut uniquement",
   "cf0f7fc3df26fa75": "Statut et messages",
@@ -9930,6 +10027,7 @@
   "573ea5fdf293a9d6": "Tous les checkouts",
   "470ad8c54049d1e1": "Rechercher des checkouts",
   "7e2dfdd9f97fc027": "Portée des projets",
+  "1cf216566c1ee064": "Projet indisponible",
   "c1b8c351aa90f319": [
     {
       "t": "span",
@@ -10461,7 +10559,6 @@
   "f7b3ac7ea71b2a41": "Afficher le compte",
   "8de5a4366b58bdba": "Masquer le compte",
   "362486999f207b7d": "Connecté, mais le jeton enregistré ci-dessous est utilisé tant qu’il peut être lu.",
-  "9e8db85a88bbfa4a": "Connecté",
   "4e4ab7e39d3cb684": "Approuvez l’app sur GitHub pour terminer la connexion.",
   "154b0a0947b7f831": "Une limite de débit de l’API GitHub bien plus élevée qu’avec un jeton personnel ou gh login.",
   "e860c536bb9cad2d": "Se connecter avec GitHub",
@@ -11604,6 +11701,8 @@
   "a22700a2aa679898": "Méthode de fusion par défaut",
   "c4548ce84893201b": "pull request fusion squash rebase dernière sélection",
   "f6c5ffe0b40ce8e2": "linear jira tickets gestionnaire équipe clé api connecter lier projet",
+  "088a0e8096814237": "Déploiements",
+  "478c8d551a33e1c9": "vercel déploiement fournisseur cli build exécution journaux connexion",
   "a4380762611c94e4": "Gestion de versions",
   "2f251b69a6c324f3": "Intervalle de git fetch",
   "deed4a583dfa2c44": "automatique branche distante actualisation arrière-plan identifiants clés de sécurité secondes désactivé",
@@ -11674,6 +11773,7 @@
   "2a50e229df85d553": "Avancer",
   "8aa6404c8018ea67": "Accueil T3 Code",
   "8e9626aa27cb188a": "Tickets",
+  "74f9b178876191fb": "Déploiements",
   "9d2fc1003e82feb1": "Utilisation",
   "20283eb1dd6119f9": "{count, plural, one {{count} pièce jointe} other {{count} pièces jointes}}",
   "ffedb03b620f97a9": "Brouillon non envoyé",

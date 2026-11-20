@@ -1217,10 +1217,10 @@ export const SETTINGS_SEARCH_ITEMS = [
   },
   {
     id: "deployment-providers",
-    title: "Deployments",
+    title: msg("Deployments", { $context: "settings section title" }),
     to: "/settings/source-control",
     scope: "environment-defaults",
-    searchTerms: ["vercel deployment provider cli build runtime logs sign in"],
+    searchTerms: [msg("vercel deployment provider cli build runtime logs sign in")],
   },
   {
     id: "source-control",

@@ -51,6 +51,13 @@
   "d810ecd91e8cf9d0": "Installiere die Origin CLI mit {install} und führe dann {login} aus.",
   "eb0f60ef4f92ab7d": "Installiere {fj} 0.6 oder neuer von {fjUrl} und führe {fjLogin} aus, oder installiere {tea} 0.16 oder neuer von {teaUrl} und führe {teaLogin} für jeden Forgejo- oder Gitea-Server aus.",
   "d026a85e2e50e675": "Installiere die GitCafe CLI mit {install} und führe dann {login} aus, speichere ein Token in den Einstellungen oder setze {variable} auf dem Server.",
+  "e8af0313e2c20558": "Eingereiht",
+  "d8711474372ff774": "Wird gebaut",
+  "851382b475c1702f": "Bereit",
+  "c820e2ab63fafd5a": "Fehlgeschlagen",
+  "90a6f6098e07600a": "Abgebrochen",
+  "d771347e5a909305": "Produktion",
+  "292ab0829743e643": "Vorschau",
   "79d776428f4d0650": "Die Datei konnte nicht geladen werden. Verbinde dich erneut und versuch es noch einmal.",
   "3ea34cbb1ca5ba9b": "Vorschau abgebrochen.",
   "7c0af279ecb3da3a": "Streamende Dateivorschauen sind in dieser Laufzeitumgebung nicht verfügbar.",
@@ -1758,6 +1765,7 @@
   "594bcbef04093f72": "WSL-Ordner öffnen",
   "04fd71efaa2c3b92": "Pull Requests öffnen",
   "57e875b79b98ab82": "Issues öffnen",
+  "9cebcdcf13d2c50b": "Deployments öffnen",
   "f1db0a234c777a1d": "T3 Code in einer anderen App verwenden (MCP)",
   "a0cc19e60dd99851": "Nutzung öffnen",
   "46694969044eee98": "Nächsten Arbeitsbereich fokussieren",
@@ -3910,6 +3918,8 @@
   "90062342f04966ff": "Aktualisiere den T3-Code-Server dieser Umgebung, um Pull Requests zu durchsuchen.",
   "5e7157db126f1641": "Issues nicht verfügbar",
   "42ade0e14ff6af94": "Aktualisiere den T3-Code-Server dieser Umgebung, um Issues zu durchsuchen.",
+  "92b6366930d59760": "Deployments nicht verfügbar",
+  "31b5d712dd63ba86": "Aktualisiere den T3-Code-Server dieser Umgebung, um Deployments zu durchsuchen.",
   "993dcd04611f9571": "Sicher speichern",
   "ccbe48efc8e30c52": "Nebenchat „{title}“ löschen?",
   "3a859b690f41e899": "Dadurch wird sein Gesprächsverlauf dauerhaft gelöscht.",
@@ -4045,6 +4055,9 @@
     },
     " weitere anzeigen"
   ],
+  "899de04d79a3df3b": "Produktions-Deployment",
+  "7d9c0f41a65d0e3a": "Vorschau-Deployment",
+  "01f72311f2d8f879": "{deployment}, {state}: {title}",
   "02d9667ff2c8e0b8": "Issue {key}: {title}",
   "4276743ee60a3c62": "{count, plural, one {{count} Kommentar} other {{count} Kommentare}}",
   "42f634397f3960aa": "In Thread-Details anzeigen",
@@ -5046,6 +5059,64 @@
   "c752acb0b7088295": "Verbunden",
   "a097631b7acab9d8": "Warte auf Genehmigung…",
   "aabd9632196ee7e5": "Verbinde neu…",
+  "917c314b5d386352": "Logs werden geladen",
+  "902bb8fb63935d3c": "Deployment wird geladen",
+  "f090df340dc64730": "Build-Logs",
+  "747c512fe0a099b4": "Laufzeit-Logs",
+  "9f26eecf420db5e2": "Deployment aktualisieren",
+  "7b27f319cd75e829": "Deployment-Logs",
+  "3ab8c33867359145": "Öffnen",
+  "ad54c3162d4f7d81": [
+    "erstellt ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "12d7b7710486b733": [
+    "gebaut in ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "eefbe4eea327471f": "Build-Logs konnten nicht geladen werden",
+  "b659e689e8b71955": "Noch keine Build-Ausgabe.",
+  "594804cd6c3c2ea7": "Laufzeit-Logs konnten nicht geladen werden",
+  "f002e517dedc8187": "Keine Laufzeit-Logs in den letzten 24 Stunden.",
+  "4d2a7f018b0c1544": "Ältere Logs konnten nicht gelesen werden",
+  "4ff72c2acc7f6656": "Wird geladen…",
+  "7170d7f28948f714": "Ältere laden",
+  "630db735b9473bbd": "Nur die neuesten Zeilen werden angezeigt.",
+  "5ece0acf3667be7a": "Build läuft. Neue Zeilen erscheinen, sobald sie eintreffen.",
+  "563d2583d5eda8aa": "Deployments konnten nicht geladen werden",
+  "cee803aec17202e6": "Deployment-Pfad",
+  "92cb8290bee02d0f": "Wähle zuerst ein Deployment aus",
+  "f9526598cf1ded85": "Deployments aktualisieren",
+  "ebb372558917923a": "Keine verknüpften Projekte",
+  "e0764c76f53314fe": [
+    "Ein Projekt zeigt hier seine Deployments, sobald sein Ordner mit",
+    " ",
+    {
+      "t": "code",
+      "i": 1,
+      "c": "vercel link"
+    },
+    " verknüpft ist."
+  ],
+  "1cdca885ca62f8c0": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " Die geladenen Deployments werden angezeigt."
+  ],
+  "e979f65ec930d7b5": "Noch keine Deployments",
+  "ab374a50446908bd": "Deploye ein verknüpftes Projekt, um es hier zu sehen.",
+  "b090645043af053d": "Deployments",
   "a80895f122d7020f": "Der Link konnte nicht geöffnet werden",
   "2a1758375b2701f3": "Backend konnte nicht hinzugefügt werden",
   "6730fa8ae68fad99": "Backend konnte nicht hinzugefügt werden.",
@@ -5426,7 +5497,6 @@
   "3c3e2a86f7fb439d": "Erwähnung konnte nicht kopiert werden",
   "b3a779a7cf9fccab": "Öffne einen Chat für dieses Projekt und versuche es erneut.",
   "e3796d26e9912913": "Der Chat kann gerade keine Eingaben annehmen.",
-  "4ff72c2acc7f6656": "Wird geladen…",
   "69858f722a57708c": "Dateien von {projectName} durchsuchen",
   "e1e1094e43a5f3d7": "{error} Klicke zum Wiederholen.",
   "ddb58ada5516a46d": "Dateien von {projectName}",
@@ -5771,14 +5841,13 @@
   "b6a29fff7c7c0808": "Niemand",
   "54420465784bb1bd": "Ältere Kommentare laden",
   "9d82ebf35bfb4043": "Hier ist noch nichts passiert.",
-  "1cf216566c1ee064": "Projekt nicht verfügbar",
   "b5ddadeb0810688c": "Status",
   "93c1fc19d9bf1db0": "Beteiligung",
   "d5a8b335d88b65bc": "{hidden} ausgeblendet",
   "2160067266a61dd8": "Beliebig",
   "cd4ec4acf33c65b9": "{count, plural, one {{count} Label} other {{count} Labels}}",
   "bfd20acb8b7dee6b": "Beliebig",
-  "ad208e3e32c85029": "Alle ausblenden",
+  "aead644e2cf1233f": "Alle anzeigen",
   "77ce79d865716719": "Keine passenden Projekte.",
   "af7eb4f9c7f0f575": "Filter",
   "08247dd39b0c85ff": "Zugewiesene Person",
@@ -6453,7 +6522,6 @@
   "64d0189be492147c": "Check-Details können nicht geöffnet werden",
   "600347ca50400a54": "Checks werden geladen…",
   "1b381201aba745c2": "Keine Checks gemeldet",
-  "aead644e2cf1233f": "Alle anzeigen",
   "a6d75a4380173c60": "Checks öffnen: {summary}",
   "be3d1766bad18693": "Checks: {summary}",
   "425e4a3d6c5c2867": "{count, plural, one {{count} fehlgeschlagen} other {{count} fehlgeschlagen}}",
@@ -8124,6 +8192,34 @@
     " Min. offline. Laufende Agenten werden beim Neustart beendet."
   ],
   "c56b618d212bf018": "Neu starten und zurückgewinnen",
+  "885a8b3714f09e46": "Angemeldet als {account}",
+  "9e8db85a88bbfa4a": "Angemeldet",
+  "5ff1771ccc4fa087": "Es konnte nicht geprüft werden, ob die {provider}-CLI angemeldet ist.",
+  "548e848e570ef3cb": "Deployment-Anbieter konnten nicht geladen werden",
+  "ec7ada2eee4bff61": "T3 Code liest die Deployments und Logs eines verknüpften Projekts über die CLI des Anbieters auf dem Server.",
+  "d0aae7eb73362150": [
+    "Die ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "-CLI ist abgemeldet. Führe",
+    " ",
+    {
+      "t": "code",
+      "i": 2,
+      "c": [
+        {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        " login"
+      ]
+    },
+    " auf dem Server aus."
+  ],
   "6b6ac43d7def4a04": "Umgebungen werden geprüft…",
   "ec617524d49f21be": "{failed} von {total} fehlgeschlagen",
   "c3a1c907ccb50ecf": "Verbindungsprüfungen erfolgreich",
@@ -9722,6 +9818,7 @@
   "51497bd401292062": "Gedrückt halten",
   "9d6cc6ac23312071": "Doppelt drücken",
   "f001fa7b329c8fbf": "Erfolgreiche ausblenden",
+  "ad208e3e32c85029": "Alle ausblenden",
   "c80e4bb3201efd71": "Zen",
   "0cb9ffcd1fb46b0c": "Nur Status",
   "cf0f7fc3df26fa75": "Status und Nachrichten",
@@ -9931,6 +10028,7 @@
   "573ea5fdf293a9d6": "Alle Checkouts",
   "470ad8c54049d1e1": "Checkouts durchsuchen",
   "7e2dfdd9f97fc027": "Projektbereich",
+  "1cf216566c1ee064": "Projekt nicht verfügbar",
   "c1b8c351aa90f319": [
     {
       "t": "span",
@@ -10462,7 +10560,6 @@
   "f7b3ac7ea71b2a41": "Konto anzeigen",
   "8de5a4366b58bdba": "Konto ausblenden",
   "362486999f207b7d": "Angemeldet, aber das unten gespeicherte Token wird verwendet, solange es lesbar ist.",
-  "9e8db85a88bbfa4a": "Angemeldet",
   "4e4ab7e39d3cb684": "Genehmige die App auf GitHub, um die Anmeldung abzuschließen.",
   "154b0a0947b7f831": "Ein deutlich höheres GitHub-API-Ratenlimit als ein persönliches Token oder gh login.",
   "e860c536bb9cad2d": "Mit GitHub anmelden",
@@ -11606,6 +11703,8 @@
   "a22700a2aa679898": "Standard-Merge-Methode",
   "c4548ce84893201b": "pull request merge squash rebase zuletzt gewählt",
   "f6c5ffe0b40ce8e2": "linear jira issues tracker team api-schlüssel verbinden zuordnen projekt",
+  "088a0e8096814237": "Deployments",
+  "478c8d551a33e1c9": "vercel deployment anbieter cli build laufzeit logs anmelden",
   "a4380762611c94e4": "Versionskontrolle",
   "2f251b69a6c324f3": "Git-Fetch-Intervall",
   "deed4a583dfa2c44": "automatisch remote branch aktualisieren hintergrund zugangsdaten sicherheitsschlüssel sekunden aus",
@@ -11676,6 +11775,7 @@
   "2a50e229df85d553": "Vorwärts",
   "8aa6404c8018ea67": "T3 Code Startseite",
   "8e9626aa27cb188a": "Issues",
+  "74f9b178876191fb": "Deployments",
   "9d2fc1003e82feb1": "Nutzung",
   "20283eb1dd6119f9": "{count, plural, one {{count} Anhang} other {{count} Anhänge}}",
   "ffedb03b620f97a9": "Nicht gesendeter Entwurf",

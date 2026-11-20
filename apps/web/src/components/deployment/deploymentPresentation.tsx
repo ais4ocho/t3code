@@ -1,7 +1,9 @@
 import { deploymentStatePresentation } from "@t3tools/client-runtime/deployment-presentation";
 import type { DeploymentState } from "@t3tools/contracts";
+import { useMessages } from "gt-react";
 import { CircleSlashIcon, RocketIcon } from "lucide-react";
 
+import { m, type MessageResolver } from "~/i18n/messages";
 import { cn } from "~/lib/utils";
 
 import { PULL_REQUEST_STATE_PRESENTATION } from "../pullRequest/pullRequestIcons";
@@ -15,8 +17,8 @@ export const DeploymentGlyph = { deployment: RocketIcon } as const;
  * request's checks. A canceled one wears a draft's grey, because work that stopped must not look
  * like work that failed.
  */
-export function deploymentStateMark(state: DeploymentState) {
-  const { label, tone } = deploymentStatePresentation(state);
+export function deploymentStateMark(state: DeploymentState, resolve: MessageResolver = m) {
+  const { label, tone } = deploymentStatePresentation(state, resolve);
   switch (tone) {
     case "pending":
       return { ...pullRequestChecksStatePresentation("pending"), label };
@@ -34,7 +36,8 @@ export function deploymentStateMark(state: DeploymentState) {
 }
 
 export function DeploymentStateGlyph({ state }: { state: DeploymentState }) {
-  const mark = deploymentStateMark(state);
+  const messages = useMessages();
+  const mark = deploymentStateMark(state, messages);
   return (
     <Tooltip>
       {/* The list row is itself a button, so the trigger stays a span. */}

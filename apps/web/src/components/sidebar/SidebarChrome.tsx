@@ -313,7 +313,7 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
           {deploymentsSupported ? (
             <SidebarUtilityItem
               icon={<DeploymentGlyph.deployment />}
-              label="Deployments"
+              label={gt("Deployments", { $context: "sidebar link to the list of deployments" })}
               onClick={handleDeploymentsClick}
             />
           ) : null}

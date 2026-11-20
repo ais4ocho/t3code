@@ -7,6 +7,7 @@ import {
 } from "@t3tools/client-runtime/state/deployments";
 import type { EnvironmentId, ProjectId } from "@t3tools/contracts";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { T, useGT, Var } from "gt-react";
 import { useEffect, useEffectEvent, type ReactNode } from "react";
 
 import { RefreshIcon } from "~/components/ui/refresh-icon";
@@ -81,6 +82,7 @@ function selectionSearch(target: DeploymentSurfaceTarget): DeploymentsSearch {
 }
 
 export function DeploymentsPage() {
+  const gt = useGT();
   const navigate = useNavigate({ from: "/deployments" });
   const search = useSearch({ from: "/_chat/deployments" });
   const { environments } = useEnvironments();
@@ -213,14 +215,14 @@ export function DeploymentsPage() {
 
   const listBody: ReactNode = !deploymentsSupported ? (
     <PullRequestsUnavailableState
-      title="Deployments unavailable"
-      error="Update this environment's T3 Code server to browse deployments."
+      title={gt("Deployments unavailable")}
+      error={gt("Update this environment's T3 Code server to browse deployments.")}
     />
   ) : nothingListed && list.isLoading ? (
     <PullRequestListGhost />
   ) : nothingListed && list.error ? (
     <PullRequestsUnavailableState
-      title="Could not load deployments"
+      title={gt("Could not load deployments")}
       error={list.error}
       onRetry={() => list.refresh()}
       refreshing={list.isPending}
@@ -231,10 +233,14 @@ export function DeploymentsPage() {
         <DeploymentGlyph.deployment />
       </EmptyMedia>
       <EmptyHeader>
-        <EmptyTitle>No linked projects</EmptyTitle>
+        <EmptyTitle>
+          <T>No linked projects</T>
+        </EmptyTitle>
         <EmptyDescription>
-          A project shows its deployments here once its folder is linked with{" "}
-          <code className="font-mono">vercel link</code>.
+          <T>
+            A project shows its deployments here once its folder is linked with{" "}
+            <code className="font-mono">vercel link</code>.
+          </T>
         </EmptyDescription>
       </EmptyHeader>
     </Empty>
@@ -242,9 +248,13 @@ export function DeploymentsPage() {
     <div className="flex flex-col gap-4">
       {list.error ? (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-warning/30 bg-warning-surface px-3 py-2 text-xs">
-          <span>{list.error} Showing the deployments that loaded.</span>
+          <span>
+            <T>
+              <Var>{list.error}</Var> Showing the deployments that loaded.
+            </T>
+          </span>
           <Button size="xs" variant="outline" onClick={() => list.refresh()}>
-            Retry
+            <T>Retry</T>
           </Button>
         </div>
       ) : null}
@@ -273,8 +283,12 @@ export function DeploymentsPage() {
             <DeploymentGlyph.deployment />
           </EmptyMedia>
           <EmptyHeader>
-            <EmptyTitle>No deployments yet</EmptyTitle>
-            <EmptyDescription>Deploy a linked project to see it here.</EmptyDescription>
+            <EmptyTitle>
+              <T>No deployments yet</T>
+            </EmptyTitle>
+            <EmptyDescription>
+              <T>Deploy a linked project to see it here.</T>
+            </EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : null}
@@ -290,9 +304,11 @@ export function DeploymentsPage() {
             reserveNativeControls={!rightPanelState.isOpen}
             className="relative bg-background"
           >
-            <WorkspaceBreadcrumb ariaLabel="Deployments breadcrumb">
+            <WorkspaceBreadcrumb ariaLabel={gt("Deployments breadcrumb")}>
               <WorkspaceBreadcrumbItem current>
-                <h1 className="truncate">Deployments</h1>
+                <h1 className="truncate">
+                  <T context="page title, list of deployments">Deployments</T>
+                </h1>
               </WorkspaceBreadcrumbItem>
             </WorkspaceBreadcrumb>
             <div className="min-w-0 flex-1" />
@@ -313,7 +329,7 @@ export function DeploymentsPage() {
                 rightPanelAvailable={panelSurface !== null}
                 rightPanelOpen={rightPanelState.isOpen}
                 rightPanelShortcutLabel={shortcutLabelForCommand(keybindings, "rightPanel.toggle")}
-                rightPanelUnavailableLabel="Select a deployment first"
+                rightPanelUnavailableLabel={gt("Select a deployment first")}
                 onToggleTerminal={() => undefined}
                 onToggleRightPanel={toggleRightPanel}
               />
@@ -326,7 +342,7 @@ export function DeploymentsPage() {
                 <Button
                   size="icon"
                   variant="outline"
-                  aria-label="Refresh deployments"
+                  aria-label={gt("Refresh deployments")}
                   onClick={() => list.refresh()}
                   disabled={list.isPending}
                 >

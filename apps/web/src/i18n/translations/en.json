@@ -51,6 +51,13 @@
   "d810ecd91e8cf9d0": "Install the Origin CLI with {install}, then run {login}.",
   "eb0f60ef4f92ab7d": "Install {fj} 0.6 or later from {fjUrl} and run {fjLogin}, or install {tea} 0.16 or later from {teaUrl} and run {teaLogin} for each Forgejo or Gitea server.",
   "d026a85e2e50e675": "Install the GitCafe CLI with {install}, then run {login}, save a token in Settings, or set {variable} on the server.",
+  "e8af0313e2c20558": "Queued",
+  "d8711474372ff774": "Building",
+  "851382b475c1702f": "Ready",
+  "c820e2ab63fafd5a": "Failed",
+  "90a6f6098e07600a": "Canceled",
+  "d771347e5a909305": "Production",
+  "292ab0829743e643": "Preview",
   "79d776428f4d0650": "The file could not be loaded. Reconnect and try again.",
   "3ea34cbb1ca5ba9b": "Preview cancelled.",
   "7c0af279ecb3da3a": "Streaming file previews are unavailable in this runtime.",
@@ -1759,6 +1766,7 @@
   "594bcbef04093f72": "Open WSL folder",
   "04fd71efaa2c3b92": "Open pull requests",
   "57e875b79b98ab82": "Open issues",
+  "9cebcdcf13d2c50b": "Open deployments",
   "f1db0a234c777a1d": "Use T3 Code in another app (MCP)",
   "a0cc19e60dd99851": "Open usage",
   "46694969044eee98": "Focus Next Workspace Area",
@@ -3908,6 +3916,8 @@
   "90062342f04966ff": "Update this environment's T3 Code server to browse pull requests.",
   "5e7157db126f1641": "Issues unavailable",
   "42ade0e14ff6af94": "Update this environment's T3 Code server to browse issues.",
+  "92b6366930d59760": "Deployments unavailable",
+  "31b5d712dd63ba86": "Update this environment's T3 Code server to browse deployments.",
   "993dcd04611f9571": "Save securely",
   "ccbe48efc8e30c52": "Delete side chat \"{title}\"?",
   "3a859b690f41e899": "This permanently clears its conversation history.",
@@ -4044,6 +4054,9 @@
     },
     " more"
   ],
+  "899de04d79a3df3b": "Production deployment",
+  "7d9c0f41a65d0e3a": "Preview deployment",
+  "01f72311f2d8f879": "{deployment}, {state}: {title}",
   "02d9667ff2c8e0b8": "Issue {key}: {title}",
   "4276743ee60a3c62": "{count, plural, one {{count} comment} other {{count} comments}}",
   "42f634397f3960aa": "Show in thread details",
@@ -5046,6 +5059,65 @@
   "c752acb0b7088295": "Connected",
   "a097631b7acab9d8": "Waiting for approval…",
   "aabd9632196ee7e5": "Reconnecting…",
+  "917c314b5d386352": "Loading logs",
+  "902bb8fb63935d3c": "Loading deployment",
+  "f090df340dc64730": "Build logs",
+  "747c512fe0a099b4": "Runtime logs",
+  "9f26eecf420db5e2": "Refresh deployment",
+  "7b27f319cd75e829": "Deployment logs",
+  "3ab8c33867359145": "Visit",
+  "ad54c3162d4f7d81": [
+    "created",
+    " ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "12d7b7710486b733": [
+    "built in ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "eefbe4eea327471f": "Could not load build logs",
+  "b659e689e8b71955": "No build output yet.",
+  "594804cd6c3c2ea7": "Could not load runtime logs",
+  "f002e517dedc8187": "No runtime logs in the last 24 hours.",
+  "4d2a7f018b0c1544": "Older logs could not be read",
+  "4ff72c2acc7f6656": "Loading…",
+  "7170d7f28948f714": "Load older",
+  "630db735b9473bbd": "Showing the newest lines only.",
+  "5ece0acf3667be7a": "Building. New lines appear as they arrive.",
+  "563d2583d5eda8aa": "Could not load deployments",
+  "cee803aec17202e6": "Deployments breadcrumb",
+  "92cb8290bee02d0f": "Select a deployment first",
+  "f9526598cf1ded85": "Refresh deployments",
+  "ebb372558917923a": "No linked projects",
+  "e0764c76f53314fe": [
+    "A project shows its deployments here once its folder is linked with",
+    " ",
+    {
+      "t": "code",
+      "i": 1,
+      "c": "vercel link"
+    },
+    "."
+  ],
+  "1cdca885ca62f8c0": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " Showing the deployments that loaded."
+  ],
+  "e979f65ec930d7b5": "No deployments yet",
+  "ab374a50446908bd": "Deploy a linked project to see it here.",
+  "b090645043af053d": "Deployments",
   "a80895f122d7020f": "Could not open the link",
   "2a1758375b2701f3": "Could not add backend",
   "6730fa8ae68fad99": "Failed to add backend.",
@@ -5427,7 +5499,6 @@
   "3c3e2a86f7fb439d": "Failed to copy mention",
   "b3a779a7cf9fccab": "Open a chat for this project and try again.",
   "e3796d26e9912913": "The chat isn't ready to accept input right now.",
-  "4ff72c2acc7f6656": "Loading…",
   "69858f722a57708c": "Search {projectName} files",
   "e1e1094e43a5f3d7": "{error} Click to retry.",
   "ddb58ada5516a46d": "{projectName} files",
@@ -5772,14 +5843,13 @@
   "b6a29fff7c7c0808": "None",
   "54420465784bb1bd": "Load older comments",
   "9d82ebf35bfb4043": "Nothing has happened here yet.",
-  "1cf216566c1ee064": "Unavailable project",
   "b5ddadeb0810688c": "State",
   "93c1fc19d9bf1db0": "Involvement",
   "d5a8b335d88b65bc": "{hidden} hidden",
   "2160067266a61dd8": "Any",
   "cd4ec4acf33c65b9": "{count, plural, one {{count} label} other {{count} labels}}",
   "bfd20acb8b7dee6b": "Anyone",
-  "ad208e3e32c85029": "Hide all",
+  "aead644e2cf1233f": "Show all",
   "77ce79d865716719": "No matching projects.",
   "af7eb4f9c7f0f575": "Filters",
   "08247dd39b0c85ff": "Assignee",
@@ -6460,7 +6530,6 @@
   "64d0189be492147c": "Unable to open check details",
   "600347ca50400a54": "Loading checks…",
   "1b381201aba745c2": "No checks reported",
-  "aead644e2cf1233f": "Show all",
   "a6d75a4380173c60": "Open checks: {summary}",
   "be3d1766bad18693": "Checks: {summary}",
   "425e4a3d6c5c2867": "{count, plural, one {{count} failed} other {{count} failed}}",
@@ -8132,6 +8201,35 @@
     " min. Running agents stop when it restarts."
   ],
   "c56b618d212bf018": "Restart and reclaim",
+  "885a8b3714f09e46": "Signed in as {account}",
+  "9e8db85a88bbfa4a": "Signed in",
+  "5ff1771ccc4fa087": "Could not check whether the {provider} CLI is signed in.",
+  "548e848e570ef3cb": "Could not load deployment providers",
+  "ec7ada2eee4bff61": "T3 Code reads a linked project's deployments and logs through the provider's CLI on the server.",
+  "d0aae7eb73362150": [
+    "The ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " CLI is signed out. Run",
+    " ",
+    {
+      "t": "code",
+      "i": 2,
+      "c": [
+        {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        " login"
+      ]
+    },
+    " ",
+    "on the server."
+  ],
   "6b6ac43d7def4a04": "Checking environments…",
   "ec617524d49f21be": "{failed} of {total} failed",
   "c3a1c907ccb50ecf": "Connection checks passed",
@@ -9731,6 +9829,7 @@
   "51497bd401292062": "Hold",
   "9d6cc6ac23312071": "Double press",
   "f001fa7b329c8fbf": "Hide successful",
+  "ad208e3e32c85029": "Hide all",
   "c80e4bb3201efd71": "Zen",
   "0cb9ffcd1fb46b0c": "Status only",
   "cf0f7fc3df26fa75": "Status and messages",
@@ -9940,6 +10039,7 @@
   "573ea5fdf293a9d6": "All checkouts",
   "470ad8c54049d1e1": "Search checkouts",
   "7e2dfdd9f97fc027": "Project scope",
+  "1cf216566c1ee064": "Unavailable project",
   "c1b8c351aa90f319": [
     {
       "t": "span",
@@ -10471,7 +10571,6 @@
   "f7b3ac7ea71b2a41": "Show account",
   "8de5a4366b58bdba": "Hide account",
   "362486999f207b7d": "Signed in, but the token saved below is used while it can be read.",
-  "9e8db85a88bbfa4a": "Signed in",
   "4e4ab7e39d3cb684": "Approve the app on GitHub to finish signing in.",
   "154b0a0947b7f831": "A far higher GitHub API rate limit than a personal token or gh login.",
   "e860c536bb9cad2d": "Sign in with GitHub",
@@ -11614,6 +11713,8 @@
   "a22700a2aa679898": "Default merge method",
   "c4548ce84893201b": "pull request merge squash rebase last selected",
   "f6c5ffe0b40ce8e2": "linear jira issues tracker team api key connect bind project",
+  "088a0e8096814237": "Deployments",
+  "478c8d551a33e1c9": "vercel deployment provider cli build runtime logs sign in",
   "a4380762611c94e4": "Source control",
   "2f251b69a6c324f3": "Git fetch interval",
   "deed4a583dfa2c44": "automatic remote branch refresh background credentials security keys seconds off",
@@ -11684,6 +11785,7 @@
   "2a50e229df85d553": "Go forward",
   "8aa6404c8018ea67": "T3 Code home",
   "8e9626aa27cb188a": "Issues",
+  "74f9b178876191fb": "Deployments",
   "9d2fc1003e82feb1": "Usage",
   "20283eb1dd6119f9": "{count, plural, one {{count} attachment} other {{count} attachments}}",
   "ffedb03b620f97a9": "Unsent draft",

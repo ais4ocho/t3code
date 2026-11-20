@@ -1,3 +1,5 @@
+import { useGT } from "gt-react";
+
 import { GhostBar } from "../pullRequest/PullRequestGhosts";
 
 const LINE_WIDTHS = ["w-2/3", "w-1/2", "w-3/4", "w-2/5", "w-3/5", "w-1/3"];
@@ -14,10 +16,11 @@ function GhostLogLines() {
 
 /** The log area while its first page loads. */
 export function DeploymentLogGhost() {
+  const gt = useGT();
   return (
     <div
       role="status"
-      aria-label="Loading logs"
+      aria-label={gt("Loading logs")}
       className="motion-safe:animate-skeleton min-h-0 flex-1 overflow-hidden px-4 py-3"
     >
       <GhostLogLines />
@@ -27,10 +30,11 @@ export function DeploymentLogGhost() {
 
 /** The deployment panel until the list that describes the deployment has answered. */
 export function DeploymentDetailGhost() {
+  const gt = useGT();
   return (
     <div
       role="status"
-      aria-label="Loading deployment"
+      aria-label={gt("Loading deployment")}
       className="motion-safe:animate-skeleton flex h-full min-h-0 flex-col gap-4 overflow-hidden px-4 pt-3 pb-4"
     >
       <div className="flex h-7 items-center gap-2">

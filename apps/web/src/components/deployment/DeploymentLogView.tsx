@@ -4,8 +4,10 @@ import type {
   EnvironmentId,
   ProjectId,
 } from "@t3tools/contracts";
+import { msg, T, useGT, useMessages } from "gt-react";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { m } from "~/i18n/messages";
 import { cn } from "~/lib/utils";
 import { deploymentEnvironment } from "~/state/deployments";
 import { useAtomCommand } from "~/state/use-atom-command";
@@ -24,10 +26,10 @@ import {
 const FOLLOW_SLACK_PX = 8;
 
 const SOURCE_COPY = {
-  build: { failed: "Could not load build logs", empty: "No build output yet." },
+  build: { failed: msg("Could not load build logs"), empty: msg("No build output yet.") },
   runtime: {
-    failed: "Could not load runtime logs",
-    empty: "No runtime logs in the last 24 hours.",
+    failed: msg("Could not load runtime logs"),
+    empty: msg("No runtime logs in the last 24 hours."),
   },
 } as const satisfies Record<DeploymentLogSource, { failed: string; empty: string }>;
 
@@ -59,6 +61,8 @@ function DeploymentLogLines({
   source,
   page,
 }: DeploymentLogTarget & { readonly page: DeploymentLogPage }) {
+  const gt = useGT();
+  const messages = useMessages();
   const [older, setOlder] = useState<OlderDeploymentLogs | null>(null);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const loadOlderLogs = useAtomCommand(deploymentEnvironment.olderLogs, { reportFailure: false });
@@ -85,7 +89,7 @@ function DeploymentLogLines({
     });
     setLoadingOlder(false);
     if (result._tag === "Failure") {
-      toastManager.add({ type: "error", title: "Older logs could not be read" });
+      toastManager.add({ type: "error", title: m(msg("Older logs could not be read")) });
       return;
     }
     setOlder(prependOlderDeploymentLogs(page, older, result.value));
@@ -95,8 +99,16 @@ function DeploymentLogLines({
     <div className="flex min-h-0 flex-1 flex-col">
       {page.truncated || page.live ? (
         <div className="shrink-0 px-4 pt-2 text-xs text-muted-foreground">
-          {page.truncated ? <p>Showing the newest lines only.</p> : null}
-          {page.live ? <p>Building. New lines appear as they arrive.</p> : null}
+          {page.truncated ? (
+            <p>
+              <T>Showing the newest lines only.</T>
+            </p>
+          ) : null}
+          {page.live ? (
+            <p>
+              <T>Building. New lines appear as they arrive.</T>
+            </p>
+          ) : null}
         </div>
       ) : null}
       <div
@@ -116,12 +128,14 @@ function DeploymentLogLines({
               disabled={loadingOlder}
               onClick={() => void loadOlder()}
             >
-              {loadingOlder ? "Loading…" : "Load older"}
+              {loadingOlder
+                ? gt("Loading…")
+                : gt("Load older", { $context: "button, loads older log lines" })}
             </Button>
           </div>
         ) : null}
         {lines.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{SOURCE_COPY[source].empty}</p>
+          <p className="text-sm text-muted-foreground">{messages(SOURCE_COPY[source].empty)}</p>
         ) : (
           <div className="font-mono text-xs leading-5 select-text">
             {lines.map((line, index) => (
@@ -161,11 +175,12 @@ export function DeploymentLogView({
   readonly refreshing: boolean;
   readonly onRetry: () => void;
 }) {
+  const messages = useMessages();
   if (page === null) {
     if (error === null) return <DeploymentLogGhost />;
     return (
       <PullRequestsUnavailableState
-        title={SOURCE_COPY[target.source].failed}
+        title={messages(SOURCE_COPY[target.source].failed)}
         error={error}
         onRetry={onRetry}
         refreshing={refreshing}

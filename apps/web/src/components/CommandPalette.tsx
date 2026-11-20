@@ -1731,7 +1731,7 @@ function OpenCommandPaletteDialog(props: {
       kind: "action",
       value: "action:deployments",
       searchTerms: ["deployments", "deployment", "deploy", "vercel", "build logs", "runtime logs"],
-      title: "Open deployments",
+      title: gt("Open deployments"),
       icon: <DeploymentGlyph.deployment className={ITEM_ICON_CLASS} />,
       run: async () => {
         await navigate({ to: "/deployments" });

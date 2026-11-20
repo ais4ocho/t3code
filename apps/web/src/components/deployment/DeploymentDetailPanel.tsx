@@ -15,6 +15,7 @@ import type {
   EnvironmentId,
   ProjectId,
 } from "@t3tools/contracts";
+import { msg, T, useGT, useMessages, Var } from "gt-react";
 import { ExternalLinkIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -40,8 +41,8 @@ import { DeploymentLogView } from "./DeploymentLogView";
 import { deploymentStateMark } from "./deploymentPresentation";
 
 const LOG_TABS = [
-  { value: "build", label: "Build logs" },
-  { value: "runtime", label: "Runtime logs" },
+  { value: "build", label: msg("Build logs") },
+  { value: "runtime", label: msg("Runtime logs") },
 ] as const satisfies ReadonlyArray<{ value: DeploymentLogSource; label: string }>;
 
 interface DeploymentPanelTarget {
@@ -76,6 +77,8 @@ export function useDeploymentTabTitle(target: DeploymentPanelTarget | null): str
 }
 
 export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
+  const gt = useGT();
+  const messages = useMessages();
   const { environmentId, projectId, hostname } = target;
   const listTarget = deploymentListTarget(target);
   const listQuery = useEnvironmentQuery(deploymentEnvironment.list(listTarget));
@@ -112,7 +115,7 @@ export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
 
   // A list only holds recent deployments; an older one still has its hostname and its logs.
   const deployment = listedDeployment(listQuery.data, hostname);
-  const mark = deployment === null ? null : deploymentStateMark(deployment.state);
+  const mark = deployment === null ? null : deploymentStateMark(deployment.state, messages);
   const duration = deployment === null ? null : deploymentBuildDuration(deployment);
   const refreshing = listQuery.isPending || logsQuery.isPending;
 
@@ -123,7 +126,7 @@ export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
           <PullRequestDetailTitleRow className="h-7 gap-1 text-sm sm:text-xs">
             {deployment ? (
               <span className="shrink-0 font-medium text-muted-foreground">
-                {deploymentTargetLabel(deployment.target)}
+                {deploymentTargetLabel(deployment.target, messages)}
               </span>
             ) : null}
             <InlineButton
@@ -132,7 +135,7 @@ export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
                 <a href={deploymentUrl(hostname)} target="_blank" rel="noopener noreferrer" />
               }
             >
-              Visit
+              <T>Visit</T>
               <ExternalLinkIcon aria-hidden className="size-2.5" />
             </InlineButton>
             <span className="flex-1" />
@@ -145,7 +148,7 @@ export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
             <Button
               size="icon-xs"
               variant="ghost"
-              aria-label="Refresh deployment"
+              aria-label={gt("Refresh deployment")}
               disabled={refreshing}
               onClick={() => {
                 listQuery.refresh();
@@ -171,9 +174,20 @@ export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
                   </span>
                 ) : null}
                 <span className="shrink-0">
-                  created <RelativeTime timestamp={deployment.createdAt} />
+                  <T>
+                    created{" "}
+                    <Var>
+                      <RelativeTime timestamp={deployment.createdAt} />
+                    </Var>
+                  </T>
                 </span>
-                {duration ? <span className="shrink-0">built in {duration}</span> : null}
+                {duration ? (
+                  <span className="shrink-0">
+                    <T>
+                      built in <Var>{duration}</Var>
+                    </T>
+                  </span>
+                ) : null}
               </PullRequestMetaLine>
               {deployment.branch || deployment.commitSha ? (
                 <PullRequestMetaLine className="mt-1 min-h-5 font-mono text-xs text-muted-foreground/70">
@@ -189,8 +203,8 @@ export function DeploymentDetailPanel(target: DeploymentPanelTarget) {
           ) : null}
         </div>
         <PullRequestDetailTabBar
-          label="Deployment logs"
-          tabs={LOG_TABS}
+          label={gt("Deployment logs")}
+          tabs={LOG_TABS.map((tab) => ({ ...tab, label: messages(tab.label) }))}
           value={source}
           onValueChange={setSource}
         />
